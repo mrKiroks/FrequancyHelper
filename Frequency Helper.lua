@@ -119,6 +119,31 @@ local configFile = getWorkingDirectory() .. "\\frequency_helper.ini"
 
 local chatMessages = {}  -- тут будут сообщения окна сообщений
 local maxMessages = 100  -- максимум сообщений в окне
+local selectedConfig = new.int(6) -- По умолчанию конфиг №6
+
+-- Система конфигураций
+local CONFIGS = {
+    [6] = {
+        name = u8"Конфиг №6 (основной)",
+        hasFrequencies = true,
+        techMessage = u8"Технические неполадки.",
+        interviewStart = {
+            u8"/b [%s] - [Информация]: Перехожу на частоту 103.9",
+            u8"/b [%s] - [103.9]: Занимаю гос. волну на время для",
+            u8"/b [%s] - [103.9]: .. проведения собеседования."
+        },
+        interviewLeave = u8"/b [%s] - [Информация]: Покидаю частоту 103.9"
+    },
+    [2] = {
+        name = u8"Конфиг №2 (без частот)",
+        hasFrequencies = false,
+        techMessage = u8"Проблемы с оборудованием, связь временно недоступна.",
+        interviewStart = {
+            u8"/b [%s]: Провожу собеседование, просьба не беспокоить."
+        },
+        interviewLeave = u8"/b [%s]: Завершил собеседование, частота свободна."
+    }
+}
 
 local function applyStyle()
     local style = imgui.GetStyle()
@@ -186,6 +211,7 @@ local function saveConfig()
         file:write(string.format("selectedTargetOrg=%d\n", selectedTargetOrg[0]))
         file:write(string.format("sendWithoutTarget=%s\n", tostring(sendWithoutTarget[0])))
         file:write(string.format("messageText=%s\n", ffi.string(messageText)))
+        file:write(string.format("selectedConfig=%d\n", selectedConfig[0]))
         file:close()
         return true
     end
@@ -225,6 +251,8 @@ local function loadConfig()
                 elseif key == "messageText" then
                     ffi.fill(messageText, 0)
                     ffi.copy(messageText, value)
+                elseif key == "selectedConfig" then
+                    selectedConfig[0] = tonumber(value) or 6
                 end
             end
         end
@@ -276,13 +304,13 @@ local function sendMessage()
 
         local fullMessage
         if sendWithoutTarget[0] then
-            fullMessage = string.format("/d [%s] - [%s]: %s",
+            fullMessage = string.format("/b [%s] - [%s]: %s",
                 toCP1251(currentOrg),
                 frequency,
                 toCP1251(message))
         else
             local targetOrg = ORGANIZATIONS[selectedTargetOrg[0] + 1]
-            fullMessage = string.format("/d [%s] - [%s] - [%s]: %s",
+            fullMessage = string.format("/b [%s] - [%s] - [%s]: %s",
                 toCP1251(currentOrg),
                 frequency,
                 toCP1251(targetOrg),
@@ -301,7 +329,7 @@ local function switchFrequency()
     local frequency = frequencies[selectedFreq[0] + 1]
 
     if frequency then
-        local msg = string.format("/d [%s] - [Информация]: Перехожу на частоту %s",
+        local msg = string.format("b [%s] - [Информация]: Перехожу на частоту %s",
             toCP1251(currentOrg),
             frequency)
         sampSendChat(msg)
@@ -317,7 +345,7 @@ local function leaveFrequency()
     local frequency = frequencies[selectedFreq[0] + 1]
 
     if frequency then
-        local msg = string.format("/d [%s] - [Информация]: Покидаю частоту %s",
+        local msg = string.format("/b [%s] - [Информация]: Покидаю частоту %s",
             toCP1251(currentOrg),
             frequency)
         sampSendChat(msg)
@@ -326,25 +354,23 @@ end
 
 local function startInterview()
     lua_thread.create(function()
+        local cfg = CONFIGS[selectedConfig[0]]
         local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-        sampSendChat(string.format("/d [%s] - [Информация]: Перехожу на частоту 103.9",
-            toCP1251(currentOrg)))
-        wait(1000)
-        sampSendChat(string.format("/d [%s] - [103.9]: Занимаю гос. волну на время для",
-            toCP1251(currentOrg)))
-        wait(1000)
-        sampSendChat(string.format("/d [%s] - [103.9]: .. проведения собеседования.",
-            toCP1251(currentOrg)))
-        wait(1000)
+        for _, line in ipairs(cfg.interviewStart) do
+            sampSendChat(string.format(line, toCP1251(currentOrg)))
+            wait(1000)
+        end
         sampSendChat("/lmenu")
     end)
 end
 
+
 local function leaveInterview()
+    local cfg = CONFIGS[selectedConfig[0]]
     local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-    sampSendChat(string.format("/d [%s] - [Информация]: Покидаю частоту 103.9",
-        toCP1251(currentOrg)))
+    sampSendChat(string.format(cfg.interviewLeave, toCP1251(currentOrg)))
 end
+
 
 function matchAny(str, patterns)
     for _, pattern in ipairs(patterns) do
@@ -515,6 +541,20 @@ end
 local function drawWindow()
     imgui.SetNextWindowSize(imgui.ImVec2(450, 500), imgui.Cond.FirstUseEver)
     imgui.Begin(u8"Frequency Helper v1.4", windowState)
+    local cfg = CONFIGS[selectedConfig[0]]
+
+    imgui.Text(u8"Выберите конфигурацию:")
+    if imgui.BeginCombo(u8"##config", cfg.name) then
+        for id, data in pairs(CONFIGS) do
+            if imgui.Selectable(data.name, selectedConfig[0] == id) then
+                selectedConfig[0] = id
+                saveConfig()
+            end
+        end
+        imgui.EndCombo()
+    end
+
+imgui.Separator()
 
     imgui.Text(u8"Ваша организация:")
     if imgui.BeginCombo(u8"##org", ORGANIZATIONS[selectedOrg[0] + 1]) then
@@ -536,31 +576,33 @@ table.sort(freqKeys)
 local orgName = ORGANIZATIONS[selectedOrg[0] + 1]
 local availableFrequencies = getAvailableFrequencies(orgName)
 
-imgui.Text(u8"Выберите частоту:")
-local currentFreq = availableFrequencies[selectedFreq[0] + 1] or u8"Нет доступных частот"
-if imgui.BeginCombo(u8"##freq", currentFreq) then
-    for i, freq in ipairs(availableFrequencies) do
-        if imgui.Selectable(freq, selectedFreq[0] == i - 1) then
-            selectedFreq[0] = i - 1
-            saveConfig()
+if cfg.hasFrequencies then
+    imgui.Text(u8"Выберите частоту:")
+    local currentFreq = availableFrequencies[selectedFreq[0] + 1] or u8"Нет доступных частот"
+    if imgui.BeginCombo(u8"##freq", currentFreq) then
+        for i, freq in ipairs(availableFrequencies) do
+            if imgui.Selectable(freq, selectedFreq[0] == i - 1) then
+                selectedFreq[0] = i - 1
+                saveConfig()
+            end
+            if imgui.IsItemHovered() then
+                imgui.SetTooltip(getFrequencyDescription(freq))
+            end
         end
-        if imgui.IsItemHovered() then
-            imgui.SetTooltip(getFrequencyDescription(freq))
-        end
+        imgui.EndCombo()
     end
-    imgui.EndCombo()
+
+        if imgui.Button(u8"Перейти на частоту") then
+            switchFrequency()
+        end
+
+        imgui.SameLine()
+
+        if imgui.Button(u8"Покинуть частоту") then
+            leaveFrequency()
+        end
 end
-
-    if imgui.Button(u8"Перейти на частоту") then
-        switchFrequency()
-    end
-
-    imgui.SameLine()
-
-    if imgui.Button(u8"Покинуть частоту") then
-        leaveFrequency()
-    end
-
+    
     if imgui.Button(u8"Открыть окно сообщений", imgui.ImVec2(-1, 30)) then
         messageWindowState[0] = true
         windowState[0] = false
@@ -569,13 +611,14 @@ end
     imgui.Separator()
     if imgui.Button(u8"Тех неполадки", imgui.ImVec2(-1, 30)) then
         local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-        local msg = string.format("/d [%s] - [Информация]: Технические неполадки.",
-            toCP1251(currentOrg))
+        local msg = string.format("/b [%s] - [Информация]: %s",
+            toCP1251(currentOrg),
+            toCP1251(cfg.techMessage))
         sampSendChat(msg)
     end
     
     if imgui.IsItemHovered() then
-        imgui.SetTooltip(u8"Написать в /d о тех. неполадках.")
+        imgui.SetTooltip(u8"Написать в /b о тех. неполадках.")
     end
 
     imgui.Separator()
