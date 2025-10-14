@@ -6,7 +6,7 @@ local new = imgui.new
 local ffi = require 'ffi'
 encoding.default = 'CP1251'
 u8 = encoding.UTF8
-script_name("Frequency Helper")
+script_name("Frequency Helper - customizable tags")
 script_version("2.0")
 
 -- ======================================
@@ -45,7 +45,7 @@ local DEFAULT_ORGANIZATIONS = {
 }
 
 local DEFAULT_TEMPLATES = {
-    techMessage = u8"/d [%s] - [Информация]: Технические неполадки",
+    techMessage = u8"/b [%s] - [Информация]: Технические неполадки",
     interviewStart = {
         u8"/b [%s] - [Информация]: Начинаю собеседование",
         u8"/b [%s] - [Информация]: Прошу не беспокоить, проводится собеседование"
@@ -64,7 +64,7 @@ local selectedTargetOrg = new.int(0)
 local messageText = new.char[1024]()
 local sendWithoutTarget = new.bool(false)
 local messageWindowState = new.bool(false)
-local configFile = getWorkingDirectory() .. "\frequency_helper.ini"
+local configFile = "frequency_helper.ini"
 local chatMessages = {}
 local maxMessages = 200
 
@@ -87,13 +87,15 @@ local function addChatMessageToWindow(msg)
     if #chatMessages > maxMessages then table.remove(chatMessages, 1) end
 end
 
--- Simple INI read/write (preserve order: general, [Organizations], [Templates])
 local function saveConfig()
-    local f, err = io.open(configFile, "w")
+    local f, err = io.open(configFile, "wb") -- бинарный режим
     if not f then
         sampAddChatMessage(string.format("{FF0000}[Frequency Helper]{FFFFFF} Ошибка при сохранении: %s", tostring(err)), -1)
         return false
     end
+
+    -- UTF-8 BOM
+    f:write(string.char(0xEF,0xBB,0xBF))
 
     -- General
     f:write(string.format("selectedOrg=%d\n", selectedOrg[0]))
@@ -104,49 +106,47 @@ local function saveConfig()
     -- Organizations
     f:write("\n[Organizations]\n")
     for i, org in ipairs(ORGANIZATIONS) do
-        f:write(string.format("%d=%s\n", i, ffi.string(u8:encode(org))))
+        f:write(string.format("%d=%s\n", i, org))
     end
 
     -- Templates
     f:write("\n[Templates]\n")
-    f:write(string.format("techMessage=%s\n", ffi.string(u8:encode(TEMPLATES.techMessage or ""))))
+    f:write(string.format("techMessage=%s\n", TEMPLATES.techMessage or ""))
     for i, t in ipairs(TEMPLATES.interviewStart) do
-        f:write(string.format("interviewStart%d=%s\n", i, ffi.string(u8:encode(t))))
+        f:write(string.format("interviewStart%d=%s\n", i, t))
     end
-    f:write(string.format("interviewLeave=%s\n", ffi.string(u8:encode(TEMPLATES.interviewLeave or ""))))
+    f:write(string.format("interviewLeave=%s\n", TEMPLATES.interviewLeave or ""))
 
     f:close()
     return true
 end
 
 local function loadConfig()
+    if not doesFileExist(configFile) then saveConfig() return end
+    local file = io.open(configFile, "rb")
+    if not file then return end
+
+    local content = file:read("*a")
+    file:close()
+    -- убираем BOM
+    content = content:gsub("^\239\187\191", "")
+
     -- Defaults
     ORGANIZATIONS = {}
-    for i, v in ipairs(DEFAULT_ORGANIZATIONS) do ORGANIZATIONS[i] = v end
+    for i,v in ipairs(DEFAULT_ORGANIZATIONS) do ORGANIZATIONS[i] = v end
     TEMPLATES = { techMessage = DEFAULT_TEMPLATES.techMessage, interviewStart = {}, interviewLeave = DEFAULT_TEMPLATES.interviewLeave }
-    for i, v in ipairs(DEFAULT_TEMPLATES.interviewStart) do table.insert(TEMPLATES.interviewStart, v) end
+    for i,v in ipairs(DEFAULT_TEMPLATES.interviewStart) do table.insert(TEMPLATES.interviewStart, v) end
 
-    -- Reset UI fields
     selectedOrg[0] = 0
     selectedTargetOrg[0] = 0
     sendWithoutTarget[0] = false
     ffi.fill(messageText, 0)
 
-    if not doesFileExist(configFile) then
-        saveConfig()
-        return
-    end
-
-    local section = "" -- current section
-    local file = io.open(configFile, "r")
-    if not file then return end
-    for line in file:lines() do
+    local section = ""
+    for line in content:gmatch("[^\r\n]+") do
         line = trim(line)
         if line == "" then goto continue end
-        if line:match("^%[.+%]") then
-            section = line:sub(2, -2)
-            goto continue
-        end
+        if line:match("^%[.+%]") then section = line:sub(2,-2); goto continue end
 
         local key, value = line:match("^([^=]+)=(.*)$")
         if not key then goto continue end
@@ -161,35 +161,17 @@ local function loadConfig()
             end
         elseif section == "Organizations" then
             local idx = tonumber(key)
-            if idx then
-                ORGANIZATIONS[idx] = u8:decode(value)
-            end
+            if idx then ORGANIZATIONS[idx] = value end
         elseif section == "Templates" then
-            if key == "techMessage" then TEMPLATES.techMessage = u8:decode(value)
+            if key == "techMessage" then TEMPLATES.techMessage = toCP1251(value)
             elseif key:match("^interviewStart%d+$") then
                 local idx = tonumber(key:match("(%d+)$"))
-                TEMPLATES.interviewStart[idx] = u8:decode(value)
-            elseif key == "interviewLeave" then TEMPLATES.interviewLeave = u8:decode(value)
+                TEMPLATES.interviewStart[idx] = encoding.CP1251:encode(value)
+            elseif key == "interviewLeave" then TEMPLATES.interviewLeave = encoding.CP1251:encode(value)
             end
         end
         ::continue::
     end
-    file:close()
-
-    -- clean nil holes
-    -- organizations: compact
-    local tmp = {}
-    for i=1, #ORGANIZATIONS do
-        if ORGANIZATIONS[i] and trim(ORGANIZATIONS[i]) ~= "" then table.insert(tmp, ORGANIZATIONS[i]) end
-    end
-    ORGANIZATIONS = tmp
-
-    -- interviewStart: compact and keep order
-    local tmp2 = {}
-    for i=1, #TEMPLATES.interviewStart do
-        if TEMPLATES.interviewStart[i] and trim(TEMPLATES.interviewStart[i]) ~= "" then table.insert(tmp2, TEMPLATES.interviewStart[i]) end
-    end
-    if #tmp2 > 0 then TEMPLATES.interviewStart = tmp2 end
 end
 
 -- UI style
@@ -212,43 +194,45 @@ imgui.OnInitialize(function() applyStyle() end)
 
 -- Sending messages
 local function formatTemplate(template, currentOrg, targetOrg, customMessage)
-    -- We'll try to support formats with up to 3 placeholders: %s for org, %t for target, %%m for message
-    -- But simplest is to replace %ORG% %TARGET% %MSG% markers (user can use these)
     if not template or trim(template) == "" then return "" end
     local out = template
-    out = out:gsub("%%ORG%%", ffi.string(u8:encode(currentOrg)))
-    out = out:gsub("%%TARGET%%", ffi.string(u8:encode(targetOrg or "")))
-    out = out:gsub("%%MSG%%", ffi.string(u8:encode(customMessage or "")))
-    -- Also support lone %s usage for backward compatibility
-    -- If template contains %s and no %ORG% placeholders, we'll do classic string.format with org and maybe target/message
+    out = out:gsub("%%ORG%%", currentOrg)
+    out = out:gsub("%%TARGET%%", targetOrg or "")
+    out = out:gsub("%%MSG%%", customMessage or "")
+
+    -- Поддержка %s для обратной совместимости
     if out:find("%%s") then
-        -- count %s
         local cnt = 0
         for _ in out:gmatch("%%s") do cnt = cnt + 1 end
         local args = {}
-        if cnt >= 1 then table.insert(args, ffi.string(u8:encode(currentOrg))) end
-        if cnt >= 2 then table.insert(args, ffi.string(u8:encode(targetOrg or ""))) end
-        if cnt >= 3 then table.insert(args, ffi.string(u8:encode(customMessage or ""))) end
+        if cnt >= 1 then table.insert(args, currentOrg) end
+        if cnt >= 2 then table.insert(args, targetOrg or "") end
+        if cnt >= 3 then table.insert(args, customMessage or "") end
         local success, formatted = pcall(string.format, out, table.unpack(args))
         if success then out = formatted end
     end
+
     return out
 end
 
 local function sendMessage()
     lua_thread.create(function()
         local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1] or ""
-        local targetOrg = ORGANIZATIONS[selectedTargetOrg[0] + 1] or ""
-        local message = ffi.string(messageText)
+        local targetOrg  = ORGANIZATIONS[selectedTargetOrg[0] + 1] or ""
+        local message    = ffi.string(messageText)
+
         if trim(message) == "" then return end
+
         local fullMessage
-        -- If user wants plain send (not using templates)
         if sendWithoutTarget[0] then
-            fullMessage = string.format("/b [%s] - [Информация]: %s", toCP1251(currentOrg), toCP1251(message))
+            fullMessage = string.format("/b [%s] - [Информация]: %s",
+                                        currentOrg, message)
         else
-            fullMessage = string.format("/b [%s] - [%s]: %s", toCP1251(currentOrg), toCP1251(targetOrg), toCP1251(message))
+            fullMessage = string.format("/b [%s] - [%s]: %s",
+                                        currentOrg, targetOrg, message)
         end
-        sampSendChat(fullMessage)
+        -- уходят в чат уже в CP1251
+        sampSendChat(toCP1251(fullMessage))
         ffi.fill(messageText, 0)
         saveConfig()
     end)
@@ -259,7 +243,7 @@ local function startInterview()
         local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1] or ""
         for _, t in ipairs(TEMPLATES.interviewStart) do
             local line = formatTemplate(t, currentOrg, "", "")
-            sampSendChat(line)
+            sampSendChat(toCP1251(line))
             wait(800)
         end
         sampSendChat("/lmenu")
@@ -269,7 +253,7 @@ end
 local function leaveInterview()
     local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1] or ""
     local line = formatTemplate(TEMPLATES.interviewLeave, currentOrg, "", "")
-    sampSendChat(line)
+    sampSendChat(toCP1251(line))
 end
 
 -- Server messages -> chat window
@@ -280,124 +264,132 @@ end
 
 -- UI: Settings tab - Organizations editor
 local newOrgNameBuf = new.char[128]()
+
 local function drawSettings()
     imgui.BeginChild("orgs", imgui.ImVec2(0, 220), true)
-    imgui.Text(u8"Организации:")
-    -- list with reorder and edit
+    imgui.Text(u8:encode("Организации:"))
+
     for i = 1, #ORGANIZATIONS do
         local org = ORGANIZATIONS[i]
-        imgui.PushID(i)
         imgui.BeginGroup()
         imgui.SetNextItemWidth(260)
+
         local buf = ffi.new("char[128]")
-        ffi.copy(buf, ffi.string(u8:encode(org)))
-        if imgui.InputText("##orgname", buf, 128) then
-            ORGANIZATIONS[i] = u8:decode(ffi.string(buf))
+        ffi.copy(buf, org)
+        if imgui.InputText("##org"..i, buf, 128) then
+            ORGANIZATIONS[i] = ffi.string(buf)
+            saveConfig()
+        end
+
+        imgui.SameLine()
+        if imgui.Button(u8:encode("UP##up"..i), imgui.ImVec2(30,0)) and i>1 then
+            ORGANIZATIONS[i], ORGANIZATIONS[i-1] = ORGANIZATIONS[i-1], ORGANIZATIONS[i]
             saveConfig()
         end
         imgui.SameLine()
-        if imgui.Button(u8"?", imgui.ImVec2(30, 0)) then
-            if i > 1 then
-                ORGANIZATIONS[i], ORGANIZATIONS[i-1] = ORGANIZATIONS[i-1], ORGANIZATIONS[i]
-                saveConfig()
-            end
+        if imgui.Button(u8:encode("Down##down"..i), imgui.ImVec2(30,0)) and i<#ORGANIZATIONS then
+            ORGANIZATIONS[i], ORGANIZATIONS[i+1] = ORGANIZATIONS[i+1], ORGANIZATIONS[i]
+            saveConfig()
         end
         imgui.SameLine()
-        if imgui.Button(u8"?", imgui.ImVec2(30, 0)) then
-            if i < #ORGANIZATIONS then
-                ORGANIZATIONS[i], ORGANIZATIONS[i+1] = ORGANIZATIONS[i+1], ORGANIZATIONS[i]
-                saveConfig()
-            end
-        end
-        imgui.SameLine()
-        if imgui.Button(u8"Удалить", imgui.ImVec2(70, 0)) then
+        if imgui.Button(u8:encode("Удалить##del"..i), imgui.ImVec2(70,0)) then
             table.remove(ORGANIZATIONS, i)
-            if selectedOrg[0] >= #ORGANIZATIONS then selectedOrg[0] = math.max(0, #ORGANIZATIONS-1) end
+            if selectedOrg[0] >= #ORGANIZATIONS then selectedOrg[0] = math.max(0,#ORGANIZATIONS-1) end
             saveConfig()
+            break
         end
         imgui.EndGroup()
-        imgui.PopID()
     end
 
     imgui.Separator()
-    imgui.Text(u8"Добавить новую организацию:")
+    imgui.Text(u8:encode("Добавить новую организацию:"))
     imgui.SetNextItemWidth(-1)
-    if imgui.InputText(u8"##neworg", newOrgNameBuf, 128) then end
-    if imgui.Button(u8"Добавить", imgui.ImVec2(-1, 0)) then
+    imgui.InputText("##neworg", newOrgNameBuf, 128)
+    if imgui.Button(u8:encode("Добавить"), imgui.ImVec2(-1,0)) then
         local name = trim(ffi.string(newOrgNameBuf))
         if name ~= "" then
-            table.insert(ORGANIZATIONS, u8(name))
-            ffi.fill(newOrgNameBuf, 0)
+            table.insert(ORGANIZATIONS, (name))
+            ffi.fill(newOrgNameBuf,0)
             saveConfig()
         end
     end
     imgui.EndChild()
 
-    -- Templates editor
+    ------------------------------------------------------------------
+    -- Templates
+    ------------------------------------------------------------------
     imgui.BeginChild("templates", imgui.ImVec2(0, 260), true)
-    imgui.Text(u8"Шаблоны сообщений (используйте %%ORG%% %%TARGET%% %%MSG%% или %s для совместимости):")
+    imgui.Text(u8:encode("Шаблоны сообщений (%%ORG%% %%TARGET%% %%MSG%%):"))
     imgui.Separator()
-    imgui.Text(u8"Тех. неполадки:")
+    imgui.Text(u8:encode("Тех. неполадки:"))
+
     local techBuf = ffi.new("char[512]")
-    ffi.copy(techBuf, ffi.string(u8:encode(TEMPLATES.techMessage)))
-    if imgui.InputTextMultiline(u8"##tech", techBuf, 512, imgui.ImVec2(-1, 70)) then
-        TEMPLATES.techMessage = u8:decode(ffi.string(techBuf))
+    ffi.copy(techBuf, TEMPLATES.techMessage)
+    if imgui.InputTextMultiline("##tech", techBuf, 512, imgui.ImVec2(-1,70)) then
+        TEMPLATES.techMessage = ffi.string(techBuf)
         saveConfig()
     end
 
     imgui.Separator()
-    imgui.Text(u8"Начало собеседования (несколько шаблонов):")
-    for i=1, #TEMPLATES.interviewStart do
-        imgui.PushID(i+1000)
+    imgui.Text(u8:encode("Начало собеседования:"))
+    for i = 1, #TEMPLATES.interviewStart do
         local buf = ffi.new("char[512]")
-        ffi.copy(buf, ffi.string(u8:encode(TEMPLATES.interviewStart[i])))
-        if imgui.InputText(u8("##start"..i), buf, 512) then
-            TEMPLATES.interviewStart[i] = u8:decode(ffi.string(buf))
+        ffi.copy(buf, TEMPLATES.interviewStart[i])
+        if imgui.InputText("##start"..i, buf, 512) then
+            TEMPLATES.interviewStart[i] = ffi.string(buf)
             saveConfig()
         end
         imgui.SameLine()
-        if imgui.Button(u8"?", imgui.ImVec2(30,0)) then
-            if i>1 then TEMPLATES.interviewStart[i], TEMPLATES.interviewStart[i-1] = TEMPLATES.interviewStart[i-1], TEMPLATES.interviewStart[i]; saveConfig() end
+        if imgui.Button(u8:encode("UP##up"..i+1000), imgui.ImVec2(30,0)) and i>1 then
+            TEMPLATES.interviewStart[i], TEMPLATES.interviewStart[i-1] =
+                TEMPLATES.interviewStart[i-1], TEMPLATES.interviewStart[i]
+            saveConfig()
         end
         imgui.SameLine()
-        if imgui.Button(u8"?", imgui.ImVec2(30,0)) then
-            if i<#TEMPLATES.interviewStart then TEMPLATES.interviewStart[i], TEMPLATES.interviewStart[i+1] = TEMPLATES.interviewStart[i+1], TEMPLATES.interviewStart[i]; saveConfig() end
+        if imgui.Button(u8:encode("DOWN##down"..i+1000), imgui.ImVec2(30,0)) and i<#TEMPLATES.interviewStart then
+            TEMPLATES.interviewStart[i], TEMPLATES.interviewStart[i+1] =
+                TEMPLATES.interviewStart[i+1], TEMPLATES.interviewStart[i]
+            saveConfig()
         end
         imgui.SameLine()
-        if imgui.Button(u8"Удалить", imgui.ImVec2(80,0)) then
-            table.remove(TEMPLATES.interviewStart, i); saveConfig(); break
+        if imgui.Button(u8:encode("Удалить##del"..i+1000), imgui.ImVec2(80,0)) then
+            table.remove(TEMPLATES.interviewStart, i)
+            saveConfig()
+            break
         end
-        imgui.PopID()
-    end
-    imgui.Separator()
-    local newStartBuf = ffi.new("char[256]")
-    if imgui.InputText(u8"##newstart", newStartBuf, 256) then end
-    if imgui.Button(u8"Добавить шаблон начала собеседования", imgui.ImVec2(-1,0)) then
-        local s = trim(ffi.string(newStartBuf))
-        if s ~= "" then table.insert(TEMPLATES.interviewStart, u8(s)); ffi.fill(newStartBuf,0); saveConfig() end
     end
 
     imgui.Separator()
-    imgui.Text(u8"Завершение собеседования:")
+    local newStartBuf = ffi.new("char[256]")
+    imgui.InputText("##newstart", newStartBuf, 256)
+    if imgui.Button(u8:encode("Добавить шаблон начала собеседования"), imgui.ImVec2(-1,0)) then
+        local s = trim(ffi.string(newStartBuf))
+        if s ~= "" then
+            table.insert(TEMPLATES.interviewStart, (s))
+            ffi.fill(newStartBuf,0)
+            saveConfig()
+        end
+    end
+
+    imgui.Separator()
+    imgui.Text(u8:encode("Завершение собеседования:"))
     local leaveBuf = ffi.new("char[512]")
-    ffi.copy(leaveBuf, ffi.string(u8:encode(TEMPLATES.interviewLeave)))
-    if imgui.InputText(u8"##leave", leaveBuf, 512) then
-        TEMPLATES.interviewLeave = u8:decode(ffi.string(leaveBuf))
+    ffi.copy(leaveBuf, TEMPLATES.interviewLeave)
+    if imgui.InputText("##leave", leaveBuf, 512) then
+        TEMPLATES.interviewLeave = ffi.string(leaveBuf)
         saveConfig()
     end
 
     imgui.Separator()
-    if imgui.Button(u8"Восстановить шаблоны по умолчанию", imgui.ImVec2(-1,0)) then
+    if imgui.Button(u8:encode("Восстановить шаблоны по умолчанию"), imgui.ImVec2(-1,0)) then
         TEMPLATES.techMessage = DEFAULT_TEMPLATES.techMessage
         TEMPLATES.interviewStart = {}
-        for i,v in ipairs(DEFAULT_TEMPLATES.interviewStart) do table.insert(TEMPLATES.interviewStart, v) end
+        for _,v in ipairs(DEFAULT_TEMPLATES.interviewStart) do table.insert(TEMPLATES.interviewStart, v) end
         TEMPLATES.interviewLeave = DEFAULT_TEMPLATES.interviewLeave
         saveConfig()
     end
-
     imgui.EndChild()
 end
-
 -- UI: Main tab
 local function drawMain()
     imgui.Text(u8"Ваша организация:")
@@ -431,7 +423,7 @@ local function drawMain()
     if imgui.Button(u8"Тех неполадки (шаблон)", imgui.ImVec2(-1, 30)) then
         local cur = ORGANIZATIONS[selectedOrg[0] + 1] or ""
         local line = formatTemplate(TEMPLATES.techMessage, cur, "", "")
-        sampSendChat(line)
+        sampSendChat(toCP1251(line))
     end
 
     if imgui.Button(u8"Начать собеседование", imgui.ImVec2(-1, 30)) then startInterview() end
