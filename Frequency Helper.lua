@@ -7,677 +7,481 @@ local ffi = require 'ffi'
 encoding.default = 'CP1251'
 u8 = encoding.UTF8
 script_name("Frequency Helper")
-script_version("1.6")
+script_version("2.0")
 
--- Конфигурация частот для разных организаций
-local FREQUENCIES_LIST = {
-    ["91.8"] = {
-        desc = u8"Связь между организациями Министерства юстиции (не переключаться)",
-        orgs = {u8"ФБР", u8"Полиция ЛС", u8"Полиция СФ", u8"Полиция ЛВ", u8"Областная полиция", u8"S.W.A.T"}
-    },
-    ["100.3"] = {
-        desc = u8"Связь между всеми государственными структурами",
-        orgs = {
-            u8"ФБР", u8"Полиция ЛС", u8"Полиция СФ", u8"Полиция ЛВ", u8"Областная полиция", u8"S.W.A.T",
-            u8"Армия ЛС", u8"ВМС", u8"Delta Force", u8"MPC", u8"Больница ЛС", u8"Больница СФ",
-            u8"Больница ЛВ", u8"Больница JF", u8"Тюрьма ЛВ", u8"Правительство", u8"Суд", u8"Прокуратура",
-            u8"Центр лицензирования", u8"Пожарный департамент", u8"СМИ ЛС", u8"СМИ СФ", u8"СМИ ЛВ",
-            u8"Страховая", u8"Похитители"
-        }
-    },
-    ["102.7"] = {
-        desc = u8"Экстренная частота (ЧП)",
-        orgs = {
-            u8"ФБР", u8"Полиция ЛС", u8"Полиция СФ", u8"Полиция ЛВ", u8"Областная полиция", u8"S.W.A.T",
-            u8"Армия ЛС", u8"ВМС", u8"Delta Force", u8"MPC", u8"Больница ЛС", u8"Больница СФ",
-            u8"Больница ЛВ", u8"Больница JF", u8"Тюрьма ЛВ", u8"Правительство", u8"Суд", u8"Прокуратура",
-            u8"Центр лицензирования", u8"Пожарный департамент", u8"СМИ ЛС", u8"СМИ СФ", u8"СМИ ЛВ",
-            u8"Страховая", u8"Похитители"
-        }
-    },
-    ["104.8"] = {
-        desc = u8"Связь между Министерствами обороны, здравоохранения и юстиции",
-        orgs = {
-            u8"ФБР", u8"Полиция ЛС", u8"Полиция СФ", u8"Полиция ЛВ", u8"Областная полиция", u8"S.W.A.T",
-            u8"Армия ЛС", u8"ВМС", u8"Delta Force", u8"Больница ЛС", u8"Больница СФ", u8"Больница ЛВ", u8"Больница JF"
-        }
-    },
-    ["108.3"] = {
-        desc = u8"Связь между Министерствами обороны и юстиции",
-        orgs = {
-            u8"ФБР", u8"Полиция ЛС", u8"Полиция СФ", u8"Полиция ЛВ", u8"Областная полиция", u8"S.W.A.T",
-            u8"Армия ЛС", u8"ВМС", u8"Delta Force", u8"MPC"
-        }
-    },
-    ["109.6"] = {
-        desc = u8"Связь с тюрьмой строгого режима",
-        orgs = {
-            u8"ФБР", u8"Полиция ЛС", u8"Полиция СФ", u8"Полиция ЛВ", u8"Областная полиция", u8"S.W.A.T",
-            u8"Армия ЛС", u8"ВМС", u8"Delta Force", u8"MPC", u8"Больница ЛС", u8"Больница СФ", u8"Больница ЛВ",
-            u8"Больница JF", u8"Тюрьма ЛВ"
-        }
-    },
-    ["115.2"] = {
-        desc = u8"Связь между организациями Министерства обороны (не переключаться)",
-        orgs = {u8"Армия ЛС", u8"ВМС", u8"Delta Force"}
-    },
-    ["111.4"] = {
-        desc = u8"Частота для занятия эфиров",
-        orgs = {u8"СМИ ЛС", u8"СМИ СФ", u8"СМИ ЛВ"}
-    },
-    ["105.5"] = {
-        desc = u8"Частота под контролем Губернатора",
-        orgs = {u8"Правительство"}
-    }
-}
+-- ======================================
+-- РќР°СЃС‚СЂР°РёРІР°РµРјС‹Р№ СЃРєСЂРёРїС‚: РѕСЂРіР°РЅРёР·Р°С†РёРё Рё С€Р°Р±Р»РѕРЅС‹
+-- Р’СЃС‘ С…СЂР°РЅРёС‚СЃСЏ РІ frequency_helper.ini
+-- ======================================
 
--- Список всех организаций
-local ORGANIZATIONS = {
-    u8"Правительство",
-    u8"Прокуратура",
-    u8"Суд",
-    u8"Центр лицензирования",
-    u8"Пожарный департамент",
-    u8"ФБР",
-    u8"Полиция ЛС",
-    u8"Полиция СФ",
-    u8"Полиция ЛВ",
-    u8"Областная полиция",
-    u8"Армия ЛС",
-    u8"ВМС",
+-- Default data (used if INI absent or to reset)
+local DEFAULT_ORGANIZATIONS = {
+    u8"РџСЂР°РІРёС‚РµР»СЊСЃС‚РІРѕ",
+    u8"РџСЂРѕРєСѓСЂР°С‚СѓСЂР°",
+    u8"РЎСѓРґ",
+    u8"Р¦РµРЅС‚СЂ Р»РёС†РµРЅР·РёСЂРѕРІР°РЅРёСЏ",
+    u8"РџРѕР¶Р°СЂРЅС‹Р№ РґРµРїР°СЂС‚Р°РјРµРЅС‚",
+    u8"Р¤Р‘Р ",
+    u8"РџРѕР»РёС†РёСЏ Р›РЎ",
+    u8"РџРѕР»РёС†РёСЏ РЎР¤",
+    u8"РџРѕР»РёС†РёСЏ Р›Р’",
+    u8"РћР±Р»Р°СЃС‚РЅР°СЏ РїРѕР»РёС†РёСЏ",
+    u8"РђСЂРјРёСЏ Р›РЎ",
+    u8"Р’РњРЎ",
     u8"Delta Force",
     u8"MPC",
-    u8"Тюрьма ЛВ",
-    u8"Больница ЛС",
-    u8"Больница СФ",
-    u8"Больница ЛВ",
-    u8"Больница JF",
-    u8"СМИ ЛС",
-    u8"СМИ СФ",
-    u8"СМИ ЛВ",
-    u8"Страховая",
-    u8"Похитители",
-    u8"Информация",
+    u8"РўСЋСЂСЊРјР° Р›Р’",
+    u8"Р‘РѕР»СЊРЅРёС†Р° Р›РЎ",
+    u8"Р‘РѕР»СЊРЅРёС†Р° РЎР¤",
+    u8"Р‘РѕР»СЊРЅРёС†Р° Р›Р’",
+    u8"Р‘РѕР»СЊРЅРёС†Р° JF",
+    u8"РЎРњР Р›РЎ",
+    u8"РЎРњР РЎР¤",
+    u8"РЎРњР Р›Р’",
+    u8"РЎС‚СЂР°С…РѕРІР°СЏ",
+    u8"РџРѕС…РёС‚РёС‚РµР»Рё",
+    u8"РРЅС„РѕСЂРјР°С†РёСЏ",
     u8"S.W.A.T"
 }
 
+local DEFAULT_TEMPLATES = {
+    techMessage = u8"/b [%s] - [РРЅС„РѕСЂРјР°С†РёСЏ]: РўРµС…РЅРёС‡РµСЃРєРёРµ РЅРµРїРѕР»Р°РґРєРё",
+    interviewStart = {
+        u8"/b [%s] - [РРЅС„РѕСЂРјР°С†РёСЏ]: РќР°С‡РёРЅР°СЋ СЃРѕР±РµСЃРµРґРѕРІР°РЅРёРµ",
+        u8"/b [%s] - [РРЅС„РѕСЂРјР°С†РёСЏ]: РџСЂРѕС€Сѓ РЅРµ Р±РµСЃРїРѕРєРѕРёС‚СЊ, РїСЂРѕРІРѕРґРёС‚СЃСЏ СЃРѕР±РµСЃРµРґРѕРІР°РЅРёРµ"
+    },
+    interviewLeave = u8"/b [%s] - [РРЅС„РѕСЂРјР°С†РёСЏ]: Р—Р°РІРµСЂС€РёР» СЃРѕР±РµСЃРµРґРѕРІР°РЅРёРµ"
+}
+
+-- State
+local ORGANIZATIONS = {}
+local TEMPLATES = { techMessage = "", interviewStart = {}, interviewLeave = "" }
+
+local windowState = new.bool(false)
+local settingsTab = new.int(1) -- 1: Р“Р»Р°РІРЅРѕРµ, 2: РќР°СЃС‚СЂРѕР№РєРё
+local selectedOrg = new.int(0)
+local selectedTargetOrg = new.int(0)
+local messageText = new.char[1024]()
+local sendWithoutTarget = new.bool(false)
+local messageWindowState = new.bool(false)
+local configFile = "frequency_helper.ini"
+local chatMessages = {}
+local maxMessages = 200
+
+-- Helpers
 local function trim(s)
     if s == nil then return "" end
     return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
 
--- Переменные для ImGui
-local windowState = new.bool(false)
-local selectedOrg = new.int(0)
-local selectedFreq = new.int(0)
-local selectedTargetOrg = new.int(0)
-local messageText = new.char[1024]()
-local sendWithoutTarget = new.bool(false)
-local messageWindowState = new.bool(false)
-
-local configFile = getWorkingDirectory() .. "\\frequency_helper.ini"
-
-local chatMessages = {}  -- тут будут сообщения окна сообщений
-local maxMessages = 100  -- максимум сообщений в окне
-local selectedConfig = new.int(6) -- По умолчанию конфиг №6
-
--- Система конфигураций
-local CONFIGS = {
-    [6] = {
-        name = u8"Конфиг №6 (основной)",
-        hasFrequencies = true,
-        techMessage = u8"Технические неполадки.",
-        interviewStart = {
-            u8"/b [%s] - [Информация]: Перехожу на частоту 103.9",
-            u8"/b [%s] - [103.9]: Занимаю гос. волну на время для",
-            u8"/b [%s] - [103.9]: .. проведения собеседования."
-        },
-        interviewLeave = u8"/b [%s] - [Информация]: Покидаю частоту 103.9"
-    },
-    [2] = {
-        name = u8"Конфиг №2 (без частот)",
-        hasFrequencies = false,
-        techMessage = u8"Проблемы с оборудованием, связь временно недоступна.",
-        interviewStart = {
-            u8"/b [%s]: Провожу собеседование, просьба не беспокоить."
-        },
-        interviewLeave = u8"/b [%s]: Завершил собеседование, частота свободна."
-    }
-}
-
-local function applyStyle()
-    local style = imgui.GetStyle()
-    local colors = style.Colors
-    local clr = imgui.Col
-
-    style.WindowPadding = imgui.ImVec2(15, 15)
-    style.WindowRounding = 10.0
-    style.FramePadding = imgui.ImVec2(10, 5)
-    style.FrameRounding = 5.0
-    style.ItemSpacing = imgui.ImVec2(12, 8)
-    style.ItemInnerSpacing = imgui.ImVec2(8, 6)
-    style.ScrollbarSize = 15.0
-    style.ScrollbarRounding = 9.0
-    style.GrabRounding = 5.0
-
-    colors[clr.Text] = imgui.ImVec4(1.00, 1.00, 1.00, 1.00)
-    colors[clr.WindowBg] = imgui.ImVec4(0.06, 0.06, 0.10, 0.98)
-    colors[clr.Border] = imgui.ImVec4(0.20, 0.20, 0.40, 0.50)
-    colors[clr.FrameBg] = imgui.ImVec4(0.15, 0.15, 0.25, 1.00)
-    colors[clr.FrameBgHovered] = imgui.ImVec4(0.20, 0.20, 0.40, 0.40)
-    colors[clr.FrameBgActive] = imgui.ImVec4(0.25, 0.25, 0.45, 0.67)
-    colors[clr.TitleBg] = imgui.ImVec4(0.10, 0.10, 0.15, 1.00)
-    colors[clr.TitleBgActive] = imgui.ImVec4(0.15, 0.15, 0.30, 1.00)
-    colors[clr.ScrollbarGrab] = imgui.ImVec4(0.30, 0.30, 0.60, 0.31)
-    colors[clr.ScrollbarGrabHovered] = imgui.ImVec4(0.35, 0.35, 0.65, 0.67)
-    colors[clr.ScrollbarGrabActive] = imgui.ImVec4(0.40, 0.40, 0.80, 1.00)
-    colors[clr.CheckMark] = imgui.ImVec4(0.40, 0.40, 0.80, 1.00)
-    colors[clr.Button] = imgui.ImVec4(0.25, 0.25, 0.45, 0.40)
-    colors[clr.ButtonHovered] = imgui.ImVec4(0.35, 0.35, 0.65, 0.67)
-    colors[clr.ButtonActive] = imgui.ImVec4(0.40, 0.40, 0.80, 1.00)
-    colors[clr.Header] = imgui.ImVec4(0.25, 0.25, 0.45, 0.40)
-    colors[clr.HeaderHovered] = imgui.ImVec4(0.35, 0.35, 0.65, 0.67)
-    colors[clr.HeaderActive] = imgui.ImVec4(0.40, 0.40, 0.80, 1.00)
-end
-
-imgui.OnInitialize(function()
-    applyStyle()
-end)
-
-local function cleanOrgName(org)
-    if not org then return "" end
-    org = org:gsub("^.*%]", "")
-    org = org:gsub("[%[%]:%-]", "")
-    return trim(org)
-end
-
-local function cleanFrequency(freq)
-    if not freq then return "" end
-    return freq:gsub("[^%d%.]", ""):gsub("%.?$", "")  -- Убираем все символы, кроме цифр и точки, и удаляем точку в конце
-end
-
-local activeFrequencies = {}
-
 local function toCP1251(text)
     return encoding.UTF8:decode(text)
-end
-
--- Сохранение конфигурации в файл
-local function saveConfig()
-    local file = io.open(configFile, "w")
-    if file then
-        file:write(string.format("selectedOrg=%d\n", selectedOrg[0]))
-        file:write(string.format("selectedFreq=%d\n", selectedFreq[0]))
-        file:write(string.format("selectedTargetOrg=%d\n", selectedTargetOrg[0]))
-        file:write(string.format("sendWithoutTarget=%s\n", tostring(sendWithoutTarget[0])))
-        file:write(string.format("messageText=%s\n", ffi.string(messageText)))
-        file:write(string.format("selectedConfig=%d\n", selectedConfig[0]))
-        file:close()
-        return true
-    end
-    return false
-end
-
--- Загрузка конфигурации из файла
-local function loadConfig()
-    -- Устанавливаем значения по умолчанию
-    selectedOrg[0] = 0
-    selectedFreq[0] = 0
-    selectedTargetOrg[0] = 0
-    sendWithoutTarget[0] = false
-    ffi.fill(messageText, 0)
-    
-    if not doesFileExist(configFile) then
-        saveConfig()
-        return
-    end
-    
-    local file = io.open(configFile, "r")
-    if file then
-        for line in file:lines() do
-            local key, value = line:match("^([^=]+)=(.+)$")
-            if key then
-                key = trim(key)
-                value = trim(value or "")
-                
-                if key == "selectedOrg" then
-                    selectedOrg[0] = tonumber(value) or 0
-                elseif key == "selectedFreq" then
-                    selectedFreq[0] = tonumber(value) or 0
-                elseif key == "selectedTargetOrg" then
-                    selectedTargetOrg[0] = tonumber(value) or 0
-                elseif key == "sendWithoutTarget" then
-                    sendWithoutTarget[0] = value == "true"
-                elseif key == "messageText" then
-                    ffi.fill(messageText, 0)
-                    ffi.copy(messageText, value)
-                elseif key == "selectedConfig" then
-                    selectedConfig[0] = tonumber(value) or 6
-                end
-            end
-        end
-        file:close()
-    end
-end
-
-local function getAvailableFrequencies(orgName)
-    local available = {}
-    for freq, data in pairs(FREQUENCIES_LIST) do
-        for _, org in ipairs(data.orgs) do
-            if org == orgName then
-                table.insert(available, freq)
-                break
-            end
-        end
-    end
-    table.sort(available, function(a, b) return tonumber(a) < tonumber(b) end)
-    return available
-end
-
-local function getFrequencyDescription(freq)
-    return FREQUENCIES_LIST[freq] and FREQUENCIES_LIST[freq].desc or u8""
-end
-
-local function addChatMessageToWindow(msg)
-    table.insert(chatMessages, msg)
-    if #chatMessages > maxMessages then
-        table.remove(chatMessages, 1)
-    end
-end
-
-local function getCurrentFrequency()
-    local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-    local freqs = getAvailableFrequencies(currentOrg)
-    return freqs[selectedFreq[0] + 1]
-end
-
-local function sendMessage()
-    lua_thread.create(function()
-        local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-        local frequencies = getAvailableFrequencies(currentOrg)
-        local frequency = frequencies[selectedFreq[0] + 1]
-        
-        if not frequency then return end
-        
-        local message = ffi.string(messageText)
-        if message == "" then return end
-
-        local fullMessage
-        if sendWithoutTarget[0] then
-            fullMessage = string.format("/b [%s] - [%s]: %s",
-                toCP1251(currentOrg),
-                frequency,
-                toCP1251(message))
-        else
-            local targetOrg = ORGANIZATIONS[selectedTargetOrg[0] + 1]
-            fullMessage = string.format("/b [%s] - [%s] - [%s]: %s",
-                toCP1251(currentOrg),
-                frequency,
-                toCP1251(targetOrg),
-                toCP1251(message))
-        end
-
-        sampSendChat(fullMessage)
-        ffi.fill(messageText, 0)
-        saveConfig()
-    end)
-end
-
-local function switchFrequency()
-    local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-    local frequencies = getAvailableFrequencies(currentOrg)
-    local frequency = frequencies[selectedFreq[0] + 1]
-
-    if frequency then
-        local msg = string.format("b [%s] - [Информация]: Перехожу на частоту %s",
-            toCP1251(currentOrg),
-            frequency)
-        sampSendChat(msg)
-
-        messageWindowState[0] = true
-        windowState[0] = false
-    end
-end
-
-local function leaveFrequency()
-    local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-    local frequencies = getAvailableFrequencies(currentOrg)
-    local frequency = frequencies[selectedFreq[0] + 1]
-
-    if frequency then
-        local msg = string.format("/b [%s] - [Информация]: Покидаю частоту %s",
-            toCP1251(currentOrg),
-            frequency)
-        sampSendChat(msg)
-    end
-end
-
-local function startInterview()
-    lua_thread.create(function()
-        local cfg = CONFIGS[selectedConfig[0]]
-        local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-        for _, line in ipairs(cfg.interviewStart) do
-            sampSendChat(string.format(line, toCP1251(currentOrg)))
-            wait(1000)
-        end
-        sampSendChat("/lmenu")
-    end)
-end
-
-
-local function leaveInterview()
-    local cfg = CONFIGS[selectedConfig[0]]
-    local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-    sampSendChat(string.format(cfg.interviewLeave, toCP1251(currentOrg)))
-end
-
-
-function matchAny(str, patterns)
-    for _, pattern in ipairs(patterns) do
-        local result = str:match(pattern)
-        if result then
-            return result
-        end
-    end
-    return nil
 end
 
 local function stripColorCodes(str)
     return str:gsub("{[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]}", "")
 end
 
-function samp.onServerMessage(color, text)
-    local cleanText = text:gsub('{[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]}', '')
-    cleanText = cleanText:gsub(",", ".")
+local function addChatMessageToWindow(msg)
+    table.insert(chatMessages, msg)
+    if #chatMessages > maxMessages then table.remove(chatMessages, 1) end
+end
 
-    -- Обработка входа на частоту
-    local verbEnter = matchAny(cleanText, {
-        "[Пп]ерехожу?[лa]?",
-        "[Пп]ерешел?",
-        "[Пп]ерешёл?",        
-        "[Пп]ерешла?"
-    })
-
-    if verbEnter then
-        local patternEnter = "%[D%].*%[(.-)%].+%[Информация%].+" .. verbEnter .. "%s+на%s+частоту%s+([0-9%.,]+)"
-        local org, freq = cleanText:match(patternEnter)
-        if org and freq then
-            activeFrequencies[cleanOrgName(org)] = cleanFrequency(freq)
-            return
-        end
+local function saveConfig()
+    local f, err = io.open(configFile, "wb") -- Р±РёРЅР°СЂРЅС‹Р№ СЂРµР¶РёРј
+    if not f then
+        sampAddChatMessage(string.format("{FF0000}[Frequency Helper]{FFFFFF} РћС€РёР±РєР° РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё: %s", tostring(err)), -1)
+        return false
     end
 
-    -- Обработка выхода с частоты
-    local verbLeave = matchAny(cleanText, {
-        "[Пп]окидаю?",
-        "[Пп]окидал?",
-        "[Пп]окидала?",
-        "[Пп]окинул?",
-        "[Пп]окидало?",
-        "[Пп]окинула?"
-    })
+    -- UTF-8 BOM
+    f:write(string.char(0xEF,0xBB,0xBF))
 
-    if verbLeave then
-        local patternLeave = "%[D%].*%[(.-)%].+%[Информация%].+" .. verbLeave .. "%s+частоту%s+([0-9%.]+)"
-        local orgLeave, freqLeave = cleanText:match(patternLeave)
-        if orgLeave and freqLeave then
-            local cleanOrg = cleanOrgName(orgLeave)
-            local cleanFreq = cleanFrequency(freqLeave)
-            if activeFrequencies[cleanOrg] == cleanFreq then
-                activeFrequencies[cleanOrg] = nil
+    -- General
+    f:write(string.format("selectedOrg=%d\n", selectedOrg[0]))
+    f:write(string.format("selectedTargetOrg=%d\n", selectedTargetOrg[0]))
+    f:write(string.format("sendWithoutTarget=%s\n", tostring(sendWithoutTarget[0])))
+    f:write(string.format("messageText=%s\n", ffi.string(messageText)))
+
+    -- Organizations
+    f:write("\n[Organizations]\n")
+    for i, org in ipairs(ORGANIZATIONS) do
+        f:write(string.format("%d=%s\n", i, org))
+    end
+
+    -- Templates
+    f:write("\n[Templates]\n")
+    f:write(string.format("techMessage=%s\n", TEMPLATES.techMessage or ""))
+    for i, t in ipairs(TEMPLATES.interviewStart) do
+        f:write(string.format("interviewStart%d=%s\n", i, t))
+    end
+    f:write(string.format("interviewLeave=%s\n", TEMPLATES.interviewLeave or ""))
+
+    f:close()
+    return true
+end
+
+local function loadConfig()
+    -- 1-Р№ Р·Р°РїСѓСЃРє вЂ“ СЃРѕР·РґР°С‘Рј INI СЃ РґРµС„РѕР»С‚РѕРј
+    if not doesFileExist(configFile) then
+        saveConfig()          -- Р·Р°РїРёС€РµРј РґРµС„РѕР»С‚
+        return                -- Рё РІС‹С…РѕРґРёРј вЂ“ РІСЃС‘ СѓР¶Рµ Р·Р°РїРёСЃР°РЅРѕ
+    end
+
+    -- С„Р°Р№Р» РµСЃС‚СЊ вЂ“ С‡РёС‚Р°РµРј РµРіРѕ, РґРµС„РѕР»С‚ РќР• С‚СЂРѕРіР°РµРј
+    local file = io.open(configFile, "rb")
+    if not file then return end
+    local content = file:read("*a")
+    file:close()
+    content = content:gsub("^\239\187\191", "")   -- СѓР±СЂР°С‚СЊ BOM
+
+    -- СЃР±СЂРѕСЃ С‚РѕР»СЊРєРѕ С‚РµС… РїРѕР»РµР№, РєРѕС‚РѕСЂС‹Рµ С‚РѕС‡РЅРѕ РµСЃС‚СЊ РІ INI
+    for line in content:gmatch("[^\r\n]+") do
+        line = trim(line)
+        if line == "" then goto continue end
+        if line:match("^%[.+%]") then goto continue end
+
+        local key, value = line:match("^([^=]+)=(.*)$")
+        if not key then goto continue end
+        key, value = trim(key), trim(value)
+
+        -- РѕР±С‰РёРµ РЅР°СЃС‚СЂРѕР№РєРё
+        if key == "selectedOrg"        then selectedOrg[0]       = tonumber(value) or 0
+        elseif key == "selectedTargetOrg" then selectedTargetOrg[0] = tonumber(value) or 0
+        elseif key == "sendWithoutTarget" then sendWithoutTarget[0] = (value == "true")
+        elseif key == "messageText"     then ffi.copy(messageText, value)
+        end
+        ::continue::
+    end
+
+    -- РѕСЂРіР°РЅРёР·Р°С†РёРё Рё С€Р°Р±Р»РѕРЅС‹ С‡РёС‚Р°РµРј СЃС‚СЂРѕРіРѕ РёР· СЃРµРєС†РёР№
+    for line in content:gmatch("[^\r\n]+") do
+        line = trim(line)
+        local sect = line:match("^%[(.+)%]$")
+        if sect then section = sect; goto continue2 end
+        local key, value = line:match("^([^=]+)=(.*)$")
+        if not key then goto continue2 end
+        key, value = trim(key), trim(value)
+
+        if section == "Organizations" then
+            local idx = tonumber(key)
+            if idx then ORGANIZATIONS[idx] = value end
+        elseif section == "Templates" then
+            if key == "techMessage" then
+                TEMPLATES.techMessage = encoding.CP1251:encode(value)
+            elseif key == "interviewLeave" then
+                TEMPLATES.interviewLeave = encoding.CP1251:encode(value)
+            elseif key:match("^interviewStart%d+$") then
+                local idx = tonumber(key:match("%d+$"))
+                TEMPLATES.interviewStart[idx] = encoding.CP1251:encode(value)
             end
         end
-    end
-
-    local currentFreq = getCurrentFrequency()
-    if currentFreq and cleanText:find("%[" .. currentFreq .. "%]") then
-        local strippedMsg = stripColorCodes(text)
-        addChatMessageToWindow(strippedMsg)
+        ::continue2::
     end
 end
 
-local function showActiveFrequencies()
-    if not next(activeFrequencies) then
-        sampAddChatMessage("{3F40B7}[Frequency Helper]{FFFFFF} На данный момент нет организаций на частотах.", -1)
-        return
+-- UI style
+local function applyStyle()
+    local style = imgui.GetStyle()
+    local colors = style.Colors
+    local clr = imgui.Col
+    style.WindowPadding = imgui.ImVec2(12,12)
+    style.WindowRounding = 8.0
+    style.FramePadding = imgui.ImVec2(8,4)
+    style.FrameRounding = 4.0
+    style.ItemSpacing = imgui.ImVec2(10,6)
+
+    colors[clr.Text] = imgui.ImVec4(1,1,1,1)
+    colors[clr.WindowBg] = imgui.ImVec4(0.06,0.06,0.10,0.98)
+    colors[clr.FrameBg] = imgui.ImVec4(0.12,0.12,0.18,1.0)
+    colors[clr.Button] = imgui.ImVec4(0.25,0.25,0.45,0.9)
+end
+imgui.OnInitialize(function() applyStyle() end)
+
+-- Sending messages
+local function formatTemplate(template, currentOrg, targetOrg, customMessage)
+    if not template or trim(template) == "" then return "" end
+    local out = template
+    out = out:gsub("%%ORG%%", currentOrg)
+    out = out:gsub("%%TARGET%%", targetOrg or "")
+    out = out:gsub("%%MSG%%", customMessage or "")
+
+    -- РџРѕРґРґРµСЂР¶РєР° %s РґР»СЏ РѕР±СЂР°С‚РЅРѕР№ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё
+    if out:find("%%s") then
+        local cnt = 0
+        for _ in out:gmatch("%%s") do cnt = cnt + 1 end
+        local args = {}
+        if cnt >= 1 then table.insert(args, currentOrg) end
+        if cnt >= 2 then table.insert(args, targetOrg or "") end
+        if cnt >= 3 then table.insert(args, customMessage or "") end
+        local success, formatted = pcall(string.format, out, table.unpack(args))
+        if success then out = formatted end
     end
 
-    sampAddChatMessage("{3F40B7}[Frequency Helper]{FFFFFF} Активные частоты организаций:", -1)
-    sampAddChatMessage("--------------------------------", -1)
-
-    local sortedOrgs = {}
-    for org in pairs(activeFrequencies) do
-        table.insert(sortedOrgs, org)
-    end
-    table.sort(sortedOrgs)
-
-    for _, org in ipairs(sortedOrgs) do
-        local freq = activeFrequencies[org]
-        sampAddChatMessage(string.format("{3F40B7}%s{FFFFFF} находится на частоте {3F40B7}%s",
-            cleanOrgName(org),
-            cleanFrequency(freq)), -1)
-    end
-
-    sampAddChatMessage("--------------------------------", -1)
+    return out
 end
 
-local function drawMessageWindow()
-    imgui.SetNextWindowSize(imgui.ImVec2(450, 350), imgui.Cond.FirstUseEver)
-    imgui.Begin(u8"Отправка сообщения", messageWindowState)
+local function sendMessage()
+    lua_thread.create(function()
+        local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1] or ""
+        local message    = ffi.string(messageText)
+        if trim(message) == "" then return end
 
-    imgui.BeginChild("ChatMessages", imgui.ImVec2(-1, 200), true)
-    for i, msg in ipairs(chatMessages) do
-        imgui.TextWrapped(ffi.string(u8:encode(msg)))
+        local fullMessage
+        if sendWithoutTarget[0] then
+            -- СѓР±РёСЂР°РµРј С‚РёСЂРµ Рё РїСѓСЃС‚С‹Рµ СЃРєРѕР±РєРё
+            fullMessage = string.format("/b [%s]: %s", currentOrg, message)
+        else
+            local targetOrg = ORGANIZATIONS[selectedTargetOrg[0] + 1] or ""
+            fullMessage = string.format("/b [%s] - [%s]: %s", currentOrg, targetOrg, message)
+        end
+
+        sampSendChat(toCP1251(fullMessage))
+        ffi.fill(messageText, 0)
+        saveConfig()
+    end)
+end
+
+local function startInterview()
+    lua_thread.create(function()
+        local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1] or ""
+        for _, t in ipairs(TEMPLATES.interviewStart) do
+            local line = formatTemplate(t, currentOrg, "", "")
+            sampSendChat(toCP1251(line))
+            wait(800)
+        end
+        sampSendChat("/lmenu")
+    end)
+end
+
+local function leaveInterview()
+    local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1] or ""
+    local line = formatTemplate(TEMPLATES.interviewLeave, currentOrg, "", "")
+    sampSendChat(toCP1251(line))
+end
+
+-- Server messages -> chat window
+function samp.onServerMessage(color, text)
+    local cleaned = stripColorCodes(text)
+    addChatMessageToWindow(cleaned)
+end
+
+-- UI: Settings tab - Organizations editor
+local newOrgNameBuf = new.char[128]()
+
+local function drawSettings()
+    imgui.BeginChild("orgs", imgui.ImVec2(0, 220), true)
+    imgui.Text(u8:encode("РћСЂРіР°РЅРёР·Р°С†РёРё:"))
+
+    for i = 1, #ORGANIZATIONS do
+        local org = ORGANIZATIONS[i]
+        imgui.BeginGroup()
+        imgui.SetNextItemWidth(260)
+
+        local buf = ffi.new("char[128]")
+        ffi.copy(buf, org)
+        if imgui.InputText("##org"..i, buf, 128) then
+            ORGANIZATIONS[i] = ffi.string(buf)
+            saveConfig()
+        end
+
+        imgui.SameLine()
+        if imgui.Button(u8:encode("UP##up"..i), imgui.ImVec2(30,0)) and i>1 then
+            ORGANIZATIONS[i], ORGANIZATIONS[i-1] = ORGANIZATIONS[i-1], ORGANIZATIONS[i]
+            saveConfig()
+        end
+        imgui.SameLine()
+        if imgui.Button(u8:encode("Down##down"..i), imgui.ImVec2(30,0)) and i<#ORGANIZATIONS then
+            ORGANIZATIONS[i], ORGANIZATIONS[i+1] = ORGANIZATIONS[i+1], ORGANIZATIONS[i]
+            saveConfig()
+        end
+        imgui.SameLine()
+        if imgui.Button(u8:encode("РЈРґР°Р»РёС‚СЊ##del"..i), imgui.ImVec2(70,0)) then
+            table.remove(ORGANIZATIONS, i)
+            if selectedOrg[0] >= #ORGANIZATIONS then selectedOrg[0] = math.max(0,#ORGANIZATIONS-1) end
+            saveConfig()
+            break
+        end
+        imgui.EndGroup()
+    end
+
+    imgui.Separator()
+    imgui.Text(u8:encode("Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІСѓСЋ РѕСЂРіР°РЅРёР·Р°С†РёСЋ:"))
+    imgui.SetNextItemWidth(-1)
+    imgui.InputText("##neworg", newOrgNameBuf, 128)
+    if imgui.Button(u8:encode("Р”РѕР±Р°РІРёС‚СЊ"), imgui.ImVec2(-1,0)) then
+        local name = trim(ffi.string(newOrgNameBuf))
+        if name ~= "" then
+            table.insert(ORGANIZATIONS, (name))
+            ffi.fill(newOrgNameBuf,0)
+            saveConfig()
+        end
     end
     imgui.EndChild()
 
-    if imgui.Button(u8"Очистить чат", imgui.ImVec2(-1, 30)) then
-        -- Очистить все сообщения
-        chatMessages = {}
-    end
+    ------------------------------------------------------------------
+    -- Templates
+    ------------------------------------------------------------------
+    imgui.BeginChild("templates", imgui.ImVec2(0, 260), true)
+    imgui.Text(u8:encode("РЁР°Р±Р»РѕРЅС‹ СЃРѕРѕР±С‰РµРЅРёР№ (%%ORG%% %%TARGET%% %%MSG%%):"))
+    imgui.Separator()
+    imgui.Text(u8:encode("РўРµС…. РЅРµРїРѕР»Р°РґРєРё:"))
 
-    if imgui.IsItemHovered() then
-        imgui.SetTooltip(u8"Очистить все сообщения в чате")
-    end
-
-    -- Галочка "Отправить без указания организации"
-    if imgui.Checkbox(u8"Отправить без указания организации", sendWithoutTarget) then
+    local techBuf = ffi.new("char[512]")
+    ffi.copy(techBuf, TEMPLATES.techMessage)
+    if imgui.InputTextMultiline("##tech", techBuf, 512, imgui.ImVec2(-1,70)) then
+        TEMPLATES.techMessage = ffi.string(techBuf)
         saveConfig()
     end
 
-    -- Выбор организации для связи (если галочка не стоит)
-    if not sendWithoutTarget[0] then
-    imgui.Text(u8"Организация для связи:")
-        if imgui.BeginCombo(u8"##target", ORGANIZATIONS[selectedTargetOrg[0] + 1]) then
-            for i, org in ipairs(ORGANIZATIONS) do
-                if imgui.Selectable(org, selectedTargetOrg[0] == i - 1) then
-                selectedTargetOrg[0] = i - 1
-                saveConfig()
-                end
-            end
+    imgui.Separator()
+    imgui.Text(u8:encode("РќР°С‡Р°Р»Рѕ СЃРѕР±РµСЃРµРґРѕРІР°РЅРёСЏ:"))
+    for i = 1, #TEMPLATES.interviewStart do
+        local buf = ffi.new("char[512]")
+        ffi.copy(buf, TEMPLATES.interviewStart[i])
+        if imgui.InputText("##start"..i, buf, 512) then
+            TEMPLATES.interviewStart[i] = ffi.string(buf)
+            saveConfig()
+        end
+        imgui.SameLine()
+        if imgui.Button(u8:encode("UP##up"..i+1000), imgui.ImVec2(30,0)) and i>1 then
+            TEMPLATES.interviewStart[i], TEMPLATES.interviewStart[i-1] =
+                TEMPLATES.interviewStart[i-1], TEMPLATES.interviewStart[i]
+            saveConfig()
+        end
+        imgui.SameLine()
+        if imgui.Button(u8:encode("DOWN##down"..i+1000), imgui.ImVec2(30,0)) and i<#TEMPLATES.interviewStart then
+            TEMPLATES.interviewStart[i], TEMPLATES.interviewStart[i+1] =
+                TEMPLATES.interviewStart[i+1], TEMPLATES.interviewStart[i]
+            saveConfig()
+        end
+        imgui.SameLine()
+        if imgui.Button(u8:encode("РЈРґР°Р»РёС‚СЊ##del"..i+1000), imgui.ImVec2(80,0)) then
+            table.remove(TEMPLATES.interviewStart, i)
+            saveConfig()
+            break
+        end
+    end
+
+    imgui.Separator()
+    local newStartBuf = ffi.new("char[256]")
+    imgui.InputText("##newstart", newStartBuf, 256)
+    if imgui.Button(u8:encode("Р”РѕР±Р°РІРёС‚СЊ С€Р°Р±Р»РѕРЅ РЅР°С‡Р°Р»Р° СЃРѕР±РµСЃРµРґРѕРІР°РЅРёСЏ"), imgui.ImVec2(-1,0)) then
+        local s = trim(ffi.string(newStartBuf))
+        if s ~= "" then
+            table.insert(TEMPLATES.interviewStart, (s))
+            ffi.fill(newStartBuf,0)
+            saveConfig()
+        end
+    end
+
+    imgui.Separator()
+    imgui.Text(u8:encode("Р—Р°РІРµСЂС€РµРЅРёРµ СЃРѕР±РµСЃРµРґРѕРІР°РЅРёСЏ:"))
+    local leaveBuf = ffi.new("char[512]")
+    ffi.copy(leaveBuf, TEMPLATES.interviewLeave)
+    if imgui.InputText("##leave", leaveBuf, 512) then
+        TEMPLATES.interviewLeave = ffi.string(leaveBuf)
+        saveConfig()
+    end
+
+    imgui.Separator()
+    if imgui.Button(u8:encode("Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ С€Р°Р±Р»РѕРЅС‹ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ"), imgui.ImVec2(-1,0)) then
+        TEMPLATES.techMessage = DEFAULT_TEMPLATES.techMessage
+        TEMPLATES.interviewStart = {}
+        for _,v in ipairs(DEFAULT_TEMPLATES.interviewStart) do table.insert(TEMPLATES.interviewStart, v) end
+        TEMPLATES.interviewLeave = DEFAULT_TEMPLATES.interviewLeave
+        saveConfig()
+    end
+    imgui.EndChild()
+end
+-- UI: Main tab
+local function drawMain()
+    imgui.Text(u8"Р’Р°С€Р° РѕСЂРіР°РЅРёР·Р°С†РёСЏ:")
+    if imgui.BeginCombo(u8"##org", ORGANIZATIONS[selectedOrg[0] + 1] or u8"-") then
+        for i, org in ipairs(ORGANIZATIONS) do
+            if imgui.Selectable(org, selectedOrg[0] == i-1) then selectedOrg[0] = i-1; saveConfig() end
+        end
         imgui.EndCombo()
-        end
     end
 
-    -- Поле ввода сообщения
-    imgui.Text(u8"Сообщение:")
+    imgui.Text(u8"РћСЂРіР°РЅРёР·Р°С†РёСЏ РґР»СЏ СЃРІСЏР·Рё:")
+    if imgui.BeginCombo(u8"##target", ORGANIZATIONS[selectedTargetOrg[0] + 1] or u8"-") then
+        for i, org in ipairs(ORGANIZATIONS) do
+            if imgui.Selectable(org, selectedTargetOrg[0] == i-1) then selectedTargetOrg[0] = i-1; saveConfig() end
+        end
+        imgui.EndCombo()
+    end
+
+    imgui.Checkbox(u8"РћС‚РїСЂР°РІРёС‚СЊ Р±РµР· СѓРєР°Р·Р°РЅРёСЏ РѕСЂРіР°РЅРёР·Р°С†РёРё", sendWithoutTarget)
+
+    imgui.Separator()
+    imgui.Text(u8"РЎРѕРѕР±С‰РµРЅРёРµ:")
     imgui.SetNextItemWidth(-1)
-    if imgui.InputText(u8"##msg", messageText, 1024) then
-        saveConfig()
-    end
+    if imgui.InputText(u8"##msg", messageText, 1024) then saveConfig() end
 
-    -- Кнопки внизу
-    if imgui.Button(u8"Отправить сообщение", imgui.ImVec2(150, 30)) then
-        sendMessage()
-    end
-
+    if imgui.Button(u8"РћС‚РїСЂР°РІРёС‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ", imgui.ImVec2(180,30)) then sendMessage() end
     imgui.SameLine()
+    if imgui.Button(u8"РћС‚РєСЂС‹С‚СЊ РѕРєРЅРѕ СЃРѕРѕР±С‰РµРЅРёР№", imgui.ImVec2(180,30)) then messageWindowState[0] = true; windowState[0] = false end
 
-    if imgui.Button(u8"Покинуть частоту", imgui.ImVec2(150, 30)) then
-        -- Отправляем команду выхода с частоты
-        leaveFrequency()
-        -- Закрываем окно сообщений и открываем основное
-        messageWindowState[0] = false
-        windowState[0] = true
+    imgui.Separator()
+    if imgui.Button(u8"РўРµС… РЅРµРїРѕР»Р°РґРєРё (С€Р°Р±Р»РѕРЅ)", imgui.ImVec2(-1, 30)) then
+        local cur = ORGANIZATIONS[selectedOrg[0] + 1] or ""
+        local line = formatTemplate(TEMPLATES.techMessage, cur, "", "")
+        sampSendChat(toCP1251(line))
     end
-        if imgui.IsItemHovered() then
-            imgui.SetTooltip(u8"Покинуть текущую частоту и закрыть окно сообщений")
-        end
 
+    if imgui.Button(u8"РќР°С‡Р°С‚СЊ СЃРѕР±РµСЃРµРґРѕРІР°РЅРёРµ", imgui.ImVec2(-1, 30)) then startInterview() end
+    if imgui.Button(u8"Р—Р°РІРµСЂС€РёС‚СЊ СЃРѕР±РµСЃРµРґРѕРІР°РЅРёРµ", imgui.ImVec2(-1, 30)) then leaveInterview() end
+
+    imgui.Separator()
+    imgui.BeginChild("ChatMessagesMain", imgui.ImVec2(-1,150), true)
+    for i, msg in ipairs(chatMessages) do imgui.TextWrapped(ffi.string(u8:encode(msg))) end
+    imgui.EndChild()
+end
+
+local function drawMessageWindow()
+    imgui.SetNextWindowSize(imgui.ImVec2(520,380), imgui.Cond.FirstUseEver)
+    imgui.Begin(u8"РћРєРЅРѕ СЃРѕРѕР±С‰РµРЅРёР№", messageWindowState)
+    imgui.BeginChild("msgs", imgui.ImVec2(-1, -60), true)
+    for i, msg in ipairs(chatMessages) do imgui.TextWrapped(ffi.string(u8:encode(msg))) end
+    imgui.EndChild()
+    if imgui.Button(u8"РћС‡РёСЃС‚РёС‚СЊ С‡Р°С‚", imgui.ImVec2(140,30)) then chatMessages = {}; saveConfig() end
     imgui.SameLine()
-
-    if imgui.Button(u8"Закрыть", imgui.ImVec2(120, 30)) then
-        messageWindowState[0] = false
-        windowState[0] = true
-    end
-    
-    if imgui.IsItemHovered() then
-        imgui.SetTooltip(u8"Закрыть окно сообщений без выхода с частоты")
-    end
-
+    if imgui.Button(u8"Р—Р°РєСЂС‹С‚СЊ", imgui.ImVec2(140,30)) then messageWindowState[0] = false; windowState[0] = true end
     imgui.End()
 end
 
 local function drawWindow()
-    imgui.SetNextWindowSize(imgui.ImVec2(450, 500), imgui.Cond.FirstUseEver)
-    imgui.Begin(u8"Frequency Helper v1.4", windowState)
-    local cfg = CONFIGS[selectedConfig[0]]
+    imgui.SetNextWindowSize(imgui.ImVec2(540, 720), imgui.Cond.FirstUseEver)
+    imgui.Begin(u8"Frequency Helper вЂ” СЂРµРґР°РєС‚РѕСЂ С‚РµРіРѕРІ Рё С€Р°Р±Р»РѕРЅРѕРІ", windowState)
 
-    imgui.Text(u8"Выберите конфигурацию:")
-    if imgui.BeginCombo(u8"##config", cfg.name) then
-        for id, data in pairs(CONFIGS) do
-            if imgui.Selectable(data.name, selectedConfig[0] == id) then
-                selectedConfig[0] = id
-                saveConfig()
-            end
+    if imgui.BeginTabBar(u8"MainTabs") then
+        if imgui.BeginTabItem(u8"Р“Р»Р°РІРЅР°СЏ") then
+            settingsTab[0] = 1
+            drawMain()
+            imgui.EndTabItem()
         end
-        imgui.EndCombo()
-    end
-
-imgui.Separator()
-
-    imgui.Text(u8"Ваша организация:")
-    if imgui.BeginCombo(u8"##org", ORGANIZATIONS[selectedOrg[0] + 1]) then
-        for i, org in ipairs(ORGANIZATIONS) do
-            if imgui.Selectable(org, selectedOrg[0] == i - 1) then
-                selectedOrg[0] = i - 1
-                selectedFreq[0] = 0
-                saveConfig()
-            end
+        if imgui.BeginTabItem(u8"РќР°СЃС‚СЂРѕР№РєРё") then
+            settingsTab[0] = 2
+            drawSettings()
+            imgui.EndTabItem()
         end
-        imgui.EndCombo()
-    end
-
-    local frequencies = getAvailableFrequencies()
-local freqKeys = {}
-for k in pairs(frequencies) do table.insert(freqKeys, k) end
-table.sort(freqKeys)
-
-local orgName = ORGANIZATIONS[selectedOrg[0] + 1]
-local availableFrequencies = getAvailableFrequencies(orgName)
-
-if cfg.hasFrequencies then
-    imgui.Text(u8"Выберите частоту:")
-    local currentFreq = availableFrequencies[selectedFreq[0] + 1] or u8"Нет доступных частот"
-    if imgui.BeginCombo(u8"##freq", currentFreq) then
-        for i, freq in ipairs(availableFrequencies) do
-            if imgui.Selectable(freq, selectedFreq[0] == i - 1) then
-                selectedFreq[0] = i - 1
-                saveConfig()
-            end
-            if imgui.IsItemHovered() then
-                imgui.SetTooltip(getFrequencyDescription(freq))
-            end
-        end
-        imgui.EndCombo()
-    end
-
-        if imgui.Button(u8"Перейти на частоту") then
-            switchFrequency()
-        end
-
-        imgui.SameLine()
-
-        if imgui.Button(u8"Покинуть частоту") then
-            leaveFrequency()
-        end
-end
-    
-    if imgui.Button(u8"Открыть окно сообщений", imgui.ImVec2(-1, 30)) then
-        messageWindowState[0] = true
-        windowState[0] = false
-    end
-
-    imgui.Separator()
-    if imgui.Button(u8"Тех неполадки", imgui.ImVec2(-1, 30)) then
-        local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-        local msg = string.format("/b [%s] - [Информация]: %s",
-            toCP1251(currentOrg),
-            toCP1251(cfg.techMessage))
-        sampSendChat(msg)
-    end
-    
-    if imgui.IsItemHovered() then
-        imgui.SetTooltip(u8"Написать в /b о тех. неполадках.")
-    end
-
-    imgui.Separator()
-    imgui.Text(u8"Собеседование:")
-
-    if imgui.Button(u8"Забить собеседование", imgui.ImVec2(-1, 30)) then
-        startInterview()
-    end
-    
-    if imgui.IsItemHovered() then
-        imgui.SetTooltip(u8"Выйти на 103.9 и написать о занятии волны для собеседования. (После этого открыват /lmenu)")
-    end
-    
-    if imgui.Button(u8"Выйти с собески", imgui.ImVec2(-1, 30)) then
-        leaveInterview()
-    end
-
-    if imgui.IsItemHovered() then
-        imgui.SetTooltip(u8"Выйти с собеседования и покинуть частоту")
-    end
-
-    imgui.Separator()
-    
-    if imgui.Button(u8"Показать активные частоты", imgui.ImVec2(-1, 30)) then
-        showActiveFrequencies()
+        imgui.EndTabBar()
     end
 
     imgui.End()
 end
 
 function main()
-    if not isSampfuncsLoaded() or not isSampLoaded() then
-        return
-    end
-    while not isSampAvailable() do
-        wait(100)
-    end
+    if not isSampfuncsLoaded() or not isSampLoaded() then return end
+    while not isSampAvailable() do wait(100) end
 
     loadConfig()
 
-    sampRegisterChatCommand("freq", function()
-        if windowState[0] or messageWindowState[0] then
-            windowState[0] = false
-            messageWindowState[0] = false
-        else
-            windowState[0] = true
-            messageWindowState[0] = false
-        end
-    end)
+    sampRegisterChatCommand("freq", function() windowState[0] = not windowState[0]; messageWindowState[0] = false end)
+    sampAddChatMessage("{3F40B7}[Frequency Helper]{FFFFFF} РСЃРїРѕР»СЊР·СѓР№С‚Рµ /freq РґР»СЏ РѕС‚РєСЂС‹С‚РёСЏ РјРµРЅСЋ | РўРµРіРё Рё С€Р°Р±Р»РѕРЅС‹ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РІ frequency_helper.ini", -1)
 
-    sampRegisterChatCommand("activefreq", function()
-        showActiveFrequencies()
-    end)
-
-    sampAddChatMessage("{3F40B7}[Frequency Helper]{FFFFFF} Используйте /freq для открытия меню | /activefreq для просмотра активных частот | By MrKiroks", -1)
-
-    while true do
-        wait(0)
-        end
+    while true do wait(0) end
 end
 
 imgui.OnFrame(function() return windowState[0] and not messageWindowState[0] end, drawWindow)
