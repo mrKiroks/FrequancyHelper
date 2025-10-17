@@ -69,7 +69,8 @@
 ## 📁 Структура конфига
 moonloader\
 └── config\
-└── frequency_helper.ini   ← UTF-8 с BOM
+      └── frequency_helper.ini   ← UTF-8
+└── frequancy Helper UX.lua
 
 📜 Лицензия
 MIT © 2025 mrKiroks & mr_kiroks
