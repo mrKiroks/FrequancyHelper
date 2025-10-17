@@ -1,6 +1,6 @@
 # 📡 Frequency Helper v2.0  
 
-[![Arizona RP](https://img.shields.io/badge/Arizona-RP+-orange?style=flat-square)](https://arizona-rp.com/)
+[![Arizona-RP](https://img.shields.io/badge/Arizona-SAMP+-orange?style=flat-square)](https://arizona-rp.com/)
 [![MoonLoader](https://img.shields.io/badge/MoonLoader-0.27-blue?style=flat-square)](https://www.blast.hk/threads/13305/)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
