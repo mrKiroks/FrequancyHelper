@@ -76,8 +76,8 @@
 ---
 
 ## 📁 Структура конфига
-moonloader
-└── config
+moonloader\
+└── config\
 └── frequency_helper.ini   ← UTF-8 с BOM
 
 📜 Лицензия
