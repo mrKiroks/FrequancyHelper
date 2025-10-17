@@ -1,6 +1,6 @@
 # 📡 Frequency Helper v2.0  
 
-[![Arizona-RP](https://img.shields.io/badge/Arizona-SAMP+-orange?style=flat-square)](https://arizona-rp.com/)
+[![ArizonaRP](https://img.shields.io/badge/Arizona-SAMP-orange?style=flat-square)](https://arizona-rp.com/)
 [![MoonLoader](https://img.shields.io/badge/MoonLoader-0.27-blue?style=flat-square)](https://www.blast.hk/threads/13305/)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
@@ -20,10 +20,10 @@
 
 ## 📦 Установка
 1. Установи зависимости:
-   - [MoonLoader](https://moonloader.ru)
-   - [samp.lua](https://github.com/BlastHubTeam/samp.lua)
-   - [mimgui](https://github.com/BlastHubTeam/mimgui)
-   - [fAwesome6](https://github.com/BlastHubTeam/fAwesome6)
+   - [MoonLoader](https://www.blast.hk/threads/13305/)
+   - [samp.lua](https://www.blast.hk/threads/14624/)
+   - [mimgui](https://www.blast.hk/threads/66959/)
+   - [fAwesome6](https://www.blast.hk/threads/111224/)
 
 2. Скопируй `frequency_helper.lua` в папку `moonloader`.
 
@@ -32,9 +32,7 @@
 ---
 
 ## 🎮 Использование
-| Команда | Действие |
-|---------|----------|
-| `/freq` | Открыть/закрыть главное окно |
+`/freq` - Открыть/закрыть главное окно |
 
 ### Главная вкладка
 1. Выбери свою и целевую организации.
@@ -59,10 +57,9 @@
 ---
 
 ## 🎨 Скриншоты
-*(Drag-and-drop картинки сюда при публикации на GitHub)*
 
-| Главное окно | Настройки | Окно чата |
-|--------------|-----------|-----------|
+| Главное окно | Настройки |
+|--------------|-----------|
 | ![main](screens/main.png) | ![settings](screens/settings.png) |
 
 ---
