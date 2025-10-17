@@ -9,95 +9,95 @@ u8 = encoding.UTF8
 script_name("Frequency Helper")
 script_version("1.6")
 
--- Конфигурация частот для разных организаций
+-- ГЉГ®Г­ГґГЁГЈГіГ°Г Г¶ГЁГї Г·Г Г±ГІГ®ГІ Г¤Г«Гї Г°Г Г§Г­Г»Гµ Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГ©
 local FREQUENCIES_LIST = {
     ["91.8"] = {
-        desc = u8"Связь между организациями Министерства юстиции (не переключаться)",
-        orgs = {u8"ФБР", u8"Полиция ЛС", u8"Полиция СФ", u8"Полиция ЛВ", u8"Областная полиция", u8"S.W.A.T"}
+        desc = u8"Г‘ГўГїГ§Гј Г¬ГҐГ¦Г¤Гі Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГїГ¬ГЁ ГЊГЁГ­ГЁГ±ГІГҐГ°Г±ГІГўГ  ГѕГ±ГІГЁГ¶ГЁГЁ (Г­ГҐ ГЇГҐГ°ГҐГЄГ«ГѕГ·Г ГІГјГ±Гї)",
+        orgs = {u8"Г”ГЃГђ", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‘", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‘Г”", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‚", u8"ГЋГЎГ«Г Г±ГІГ­Г Гї ГЇГ®Г«ГЁГ¶ГЁГї", u8"S.W.A.T"}
     },
     ["100.3"] = {
-        desc = u8"Связь между всеми государственными структурами",
+        desc = u8"Г‘ГўГїГ§Гј Г¬ГҐГ¦Г¤Гі ГўГ±ГҐГ¬ГЁ ГЈГ®Г±ГіГ¤Г Г°Г±ГІГўГҐГ­Г­Г»Г¬ГЁ Г±ГІГ°ГіГЄГІГіГ°Г Г¬ГЁ",
         orgs = {
-            u8"ФБР", u8"Полиция ЛС", u8"Полиция СФ", u8"Полиция ЛВ", u8"Областная полиция", u8"S.W.A.T",
-            u8"Армия ЛС", u8"ВМС", u8"Delta Force", u8"MPC", u8"Больница ЛС", u8"Больница СФ",
-            u8"Больница ЛВ", u8"Больница JF", u8"Тюрьма ЛВ", u8"Правительство", u8"Суд", u8"Прокуратура",
-            u8"Центр лицензирования", u8"Пожарный департамент", u8"СМИ ЛС", u8"СМИ СФ", u8"СМИ ЛВ",
-            u8"Страховая", u8"Похитители"
+            u8"Г”ГЃГђ", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‘", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‘Г”", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‚", u8"ГЋГЎГ«Г Г±ГІГ­Г Гї ГЇГ®Г«ГЁГ¶ГЁГї", u8"S.W.A.T",
+            u8"ГЂГ°Г¬ГЁГї Г‹Г‘", u8"Г‚ГЊГ‘", u8"Delta Force", u8"MPC", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‹Г‘", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‘Г”",
+            u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‹Г‚", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  JF", u8"Г’ГѕГ°ГјГ¬Г  Г‹Г‚", u8"ГЏГ°Г ГўГЁГІГҐГ«ГјГ±ГІГўГ®", u8"Г‘ГіГ¤", u8"ГЏГ°Г®ГЄГіГ°Г ГІГіГ°Г ",
+            u8"Г–ГҐГ­ГІГ° Г«ГЁГ¶ГҐГ­Г§ГЁГ°Г®ГўГ Г­ГЁГї", u8"ГЏГ®Г¦Г Г°Г­Г»Г© Г¤ГҐГЇГ Г°ГІГ Г¬ГҐГ­ГІ", u8"Г‘ГЊГ€ Г‹Г‘", u8"Г‘ГЊГ€ Г‘Г”", u8"Г‘ГЊГ€ Г‹Г‚",
+            u8"Г‘ГІГ°Г ГµГ®ГўГ Гї", u8"ГЏГ®ГµГЁГІГЁГІГҐГ«ГЁ"
         }
     },
     ["102.7"] = {
-        desc = u8"Экстренная частота (ЧП)",
+        desc = u8"ГќГЄГ±ГІГ°ГҐГ­Г­Г Гї Г·Г Г±ГІГ®ГІГ  (Г—ГЏ)",
         orgs = {
-            u8"ФБР", u8"Полиция ЛС", u8"Полиция СФ", u8"Полиция ЛВ", u8"Областная полиция", u8"S.W.A.T",
-            u8"Армия ЛС", u8"ВМС", u8"Delta Force", u8"MPC", u8"Больница ЛС", u8"Больница СФ",
-            u8"Больница ЛВ", u8"Больница JF", u8"Тюрьма ЛВ", u8"Правительство", u8"Суд", u8"Прокуратура",
-            u8"Центр лицензирования", u8"Пожарный департамент", u8"СМИ ЛС", u8"СМИ СФ", u8"СМИ ЛВ",
-            u8"Страховая", u8"Похитители"
+            u8"Г”ГЃГђ", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‘", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‘Г”", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‚", u8"ГЋГЎГ«Г Г±ГІГ­Г Гї ГЇГ®Г«ГЁГ¶ГЁГї", u8"S.W.A.T",
+            u8"ГЂГ°Г¬ГЁГї Г‹Г‘", u8"Г‚ГЊГ‘", u8"Delta Force", u8"MPC", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‹Г‘", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‘Г”",
+            u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‹Г‚", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  JF", u8"Г’ГѕГ°ГјГ¬Г  Г‹Г‚", u8"ГЏГ°Г ГўГЁГІГҐГ«ГјГ±ГІГўГ®", u8"Г‘ГіГ¤", u8"ГЏГ°Г®ГЄГіГ°Г ГІГіГ°Г ",
+            u8"Г–ГҐГ­ГІГ° Г«ГЁГ¶ГҐГ­Г§ГЁГ°Г®ГўГ Г­ГЁГї", u8"ГЏГ®Г¦Г Г°Г­Г»Г© Г¤ГҐГЇГ Г°ГІГ Г¬ГҐГ­ГІ", u8"Г‘ГЊГ€ Г‹Г‘", u8"Г‘ГЊГ€ Г‘Г”", u8"Г‘ГЊГ€ Г‹Г‚",
+            u8"Г‘ГІГ°Г ГµГ®ГўГ Гї", u8"ГЏГ®ГµГЁГІГЁГІГҐГ«ГЁ"
         }
     },
     ["104.8"] = {
-        desc = u8"Связь между Министерствами обороны, здравоохранения и юстиции",
+        desc = u8"Г‘ГўГїГ§Гј Г¬ГҐГ¦Г¤Гі ГЊГЁГ­ГЁГ±ГІГҐГ°Г±ГІГўГ Г¬ГЁ Г®ГЎГ®Г°Г®Г­Г», Г§Г¤Г°Г ГўГ®Г®ГµГ°Г Г­ГҐГ­ГЁГї ГЁ ГѕГ±ГІГЁГ¶ГЁГЁ",
         orgs = {
-            u8"ФБР", u8"Полиция ЛС", u8"Полиция СФ", u8"Полиция ЛВ", u8"Областная полиция", u8"S.W.A.T",
-            u8"Армия ЛС", u8"ВМС", u8"Delta Force", u8"Больница ЛС", u8"Больница СФ", u8"Больница ЛВ", u8"Больница JF"
+            u8"Г”ГЃГђ", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‘", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‘Г”", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‚", u8"ГЋГЎГ«Г Г±ГІГ­Г Гї ГЇГ®Г«ГЁГ¶ГЁГї", u8"S.W.A.T",
+            u8"ГЂГ°Г¬ГЁГї Г‹Г‘", u8"Г‚ГЊГ‘", u8"Delta Force", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‹Г‘", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‘Г”", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‹Г‚", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  JF"
         }
     },
     ["108.3"] = {
-        desc = u8"Связь между Министерствами обороны и юстиции",
+        desc = u8"Г‘ГўГїГ§Гј Г¬ГҐГ¦Г¤Гі ГЊГЁГ­ГЁГ±ГІГҐГ°Г±ГІГўГ Г¬ГЁ Г®ГЎГ®Г°Г®Г­Г» ГЁ ГѕГ±ГІГЁГ¶ГЁГЁ",
         orgs = {
-            u8"ФБР", u8"Полиция ЛС", u8"Полиция СФ", u8"Полиция ЛВ", u8"Областная полиция", u8"S.W.A.T",
-            u8"Армия ЛС", u8"ВМС", u8"Delta Force", u8"MPC"
+            u8"Г”ГЃГђ", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‘", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‘Г”", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‚", u8"ГЋГЎГ«Г Г±ГІГ­Г Гї ГЇГ®Г«ГЁГ¶ГЁГї", u8"S.W.A.T",
+            u8"ГЂГ°Г¬ГЁГї Г‹Г‘", u8"Г‚ГЊГ‘", u8"Delta Force", u8"MPC"
         }
     },
     ["109.6"] = {
-        desc = u8"Связь с тюрьмой строгого режима",
+        desc = u8"Г‘ГўГїГ§Гј Г± ГІГѕГ°ГјГ¬Г®Г© Г±ГІГ°Г®ГЈГ®ГЈГ® Г°ГҐГ¦ГЁГ¬Г ",
         orgs = {
-            u8"ФБР", u8"Полиция ЛС", u8"Полиция СФ", u8"Полиция ЛВ", u8"Областная полиция", u8"S.W.A.T",
-            u8"Армия ЛС", u8"ВМС", u8"Delta Force", u8"MPC", u8"Больница ЛС", u8"Больница СФ", u8"Больница ЛВ",
-            u8"Больница JF", u8"Тюрьма ЛВ"
+            u8"Г”ГЃГђ", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‘", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‘Г”", u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‚", u8"ГЋГЎГ«Г Г±ГІГ­Г Гї ГЇГ®Г«ГЁГ¶ГЁГї", u8"S.W.A.T",
+            u8"ГЂГ°Г¬ГЁГї Г‹Г‘", u8"Г‚ГЊГ‘", u8"Delta Force", u8"MPC", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‹Г‘", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‘Г”", u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‹Г‚",
+            u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  JF", u8"Г’ГѕГ°ГјГ¬Г  Г‹Г‚"
         }
     },
     ["115.2"] = {
-        desc = u8"Связь между организациями Министерства обороны (не переключаться)",
-        orgs = {u8"Армия ЛС", u8"ВМС", u8"Delta Force"}
+        desc = u8"Г‘ГўГїГ§Гј Г¬ГҐГ¦Г¤Гі Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГїГ¬ГЁ ГЊГЁГ­ГЁГ±ГІГҐГ°Г±ГІГўГ  Г®ГЎГ®Г°Г®Г­Г» (Г­ГҐ ГЇГҐГ°ГҐГЄГ«ГѕГ·Г ГІГјГ±Гї)",
+        orgs = {u8"ГЂГ°Г¬ГЁГї Г‹Г‘", u8"Г‚ГЊГ‘", u8"Delta Force"}
     },
     ["111.4"] = {
-        desc = u8"Частота для занятия эфиров",
-        orgs = {u8"СМИ ЛС", u8"СМИ СФ", u8"СМИ ЛВ"}
+        desc = u8"Г—Г Г±ГІГ®ГІГ  Г¤Г«Гї Г§Г Г­ГїГІГЁГї ГЅГґГЁГ°Г®Гў",
+        orgs = {u8"Г‘ГЊГ€ Г‹Г‘", u8"Г‘ГЊГ€ Г‘Г”", u8"Г‘ГЊГ€ Г‹Г‚"}
     },
     ["105.5"] = {
-        desc = u8"Частота под контролем Губернатора",
-        orgs = {u8"Правительство"}
+        desc = u8"Г—Г Г±ГІГ®ГІГ  ГЇГ®Г¤ ГЄГ®Г­ГІГ°Г®Г«ГҐГ¬ ГѓГіГЎГҐГ°Г­Г ГІГ®Г°Г ",
+        orgs = {u8"ГЏГ°Г ГўГЁГІГҐГ«ГјГ±ГІГўГ®"}
     }
 }
 
--- Список всех организаций
+-- Г‘ГЇГЁГ±Г®ГЄ ГўГ±ГҐГµ Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГ©
 local ORGANIZATIONS = {
-    u8"Правительство",
-    u8"Прокуратура",
-    u8"Суд",
-    u8"Центр лицензирования",
-    u8"Пожарный департамент",
-    u8"ФБР",
-    u8"Полиция ЛС",
-    u8"Полиция СФ",
-    u8"Полиция ЛВ",
-    u8"Областная полиция",
-    u8"Армия ЛС",
-    u8"ВМС",
+    u8"ГЏГ°Г ГўГЁГІГҐГ«ГјГ±ГІГўГ®",
+    u8"ГЏГ°Г®ГЄГіГ°Г ГІГіГ°Г ",
+    u8"Г‘ГіГ¤",
+    u8"Г–ГҐГ­ГІГ° Г«ГЁГ¶ГҐГ­Г§ГЁГ°Г®ГўГ Г­ГЁГї",
+    u8"ГЏГ®Г¦Г Г°Г­Г»Г© Г¤ГҐГЇГ Г°ГІГ Г¬ГҐГ­ГІ",
+    u8"Г”ГЃГђ",
+    u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‘",
+    u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‘Г”",
+    u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‚",
+    u8"ГЋГЎГ«Г Г±ГІГ­Г Гї ГЇГ®Г«ГЁГ¶ГЁГї",
+    u8"ГЂГ°Г¬ГЁГї Г‹Г‘",
+    u8"Г‚ГЊГ‘",
     u8"Delta Force",
     u8"MPC",
-    u8"Тюрьма ЛВ",
-    u8"Больница ЛС",
-    u8"Больница СФ",
-    u8"Больница ЛВ",
-    u8"Больница JF",
-    u8"СМИ ЛС",
-    u8"СМИ СФ",
-    u8"СМИ ЛВ",
-    u8"Страховая",
-    u8"Похитители",
-    u8"Информация",
+    u8"Г’ГѕГ°ГјГ¬Г  Г‹Г‚",
+    u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‹Г‘",
+    u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‘Г”",
+    u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‹Г‚",
+    u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  JF",
+    u8"Г‘ГЊГ€ Г‹Г‘",
+    u8"Г‘ГЊГ€ Г‘Г”",
+    u8"Г‘ГЊГ€ Г‹Г‚",
+    u8"Г‘ГІГ°Г ГµГ®ГўГ Гї",
+    u8"ГЏГ®ГµГЁГІГЁГІГҐГ«ГЁ",
+    u8"Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї",
     u8"S.W.A.T"
 }
 
@@ -106,7 +106,7 @@ local function trim(s)
     return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
 
--- Переменные для ImGui
+-- ГЏГҐГ°ГҐГ¬ГҐГ­Г­Г»ГҐ Г¤Г«Гї ImGui
 local windowState = new.bool(false)
 local selectedOrg = new.int(0)
 local selectedFreq = new.int(0)
@@ -117,8 +117,8 @@ local messageWindowState = new.bool(false)
 
 local configFile = getWorkingDirectory() .. "\\frequency_helper.ini"
 
-local chatMessages = {}  -- тут будут сообщения окна сообщений
-local maxMessages = 100  -- максимум сообщений в окне
+local chatMessages = {}  -- ГІГіГІ ГЎГіГ¤ГіГІ Г±Г®Г®ГЎГ№ГҐГ­ГЁГї Г®ГЄГ­Г  Г±Г®Г®ГЎГ№ГҐГ­ГЁГ©
+local maxMessages = 100  -- Г¬Г ГЄГ±ГЁГ¬ГіГ¬ Г±Г®Г®ГЎГ№ГҐГ­ГЁГ© Гў Г®ГЄГ­ГҐ
 
 local function applyStyle()
     local style = imgui.GetStyle()
@@ -168,7 +168,7 @@ end
 
 local function cleanFrequency(freq)
     if not freq then return "" end
-    return freq:gsub("[^%d%.]", ""):gsub("%.?$", "")  -- Убираем все символы, кроме цифр и точки, и удаляем точку в конце
+    return freq:gsub("[^%d%.]", ""):gsub("%.?$", "")  -- Г“ГЎГЁГ°Г ГҐГ¬ ГўГ±ГҐ Г±ГЁГ¬ГўГ®Г«Г», ГЄГ°Г®Г¬ГҐ Г¶ГЁГґГ° ГЁ ГІГ®Г·ГЄГЁ, ГЁ ГіГ¤Г Г«ГїГҐГ¬ ГІГ®Г·ГЄГі Гў ГЄГ®Г­Г¶ГҐ
 end
 
 local activeFrequencies = {}
@@ -177,7 +177,7 @@ local function toCP1251(text)
     return encoding.UTF8:decode(text)
 end
 
--- Сохранение конфигурации в файл
+-- Г‘Г®ГµГ°Г Г­ГҐГ­ГЁГҐ ГЄГ®Г­ГґГЁГЈГіГ°Г Г¶ГЁГЁ Гў ГґГ Г©Г«
 local function saveConfig()
     local file = io.open(configFile, "w")
     if file then
@@ -192,9 +192,9 @@ local function saveConfig()
     return false
 end
 
--- Загрузка конфигурации из файла
+-- Г‡Г ГЈГ°ГіГ§ГЄГ  ГЄГ®Г­ГґГЁГЈГіГ°Г Г¶ГЁГЁ ГЁГ§ ГґГ Г©Г«Г 
 local function loadConfig()
-    -- Устанавливаем значения по умолчанию
+    -- Г“Г±ГІГ Г­Г ГўГ«ГЁГўГ ГҐГ¬ Г§Г­Г Г·ГҐГ­ГЁГї ГЇГ® ГіГ¬Г®Г«Г·Г Г­ГЁГѕ
     selectedOrg[0] = 0
     selectedFreq[0] = 0
     selectedTargetOrg[0] = 0
@@ -301,7 +301,7 @@ local function switchFrequency()
     local frequency = frequencies[selectedFreq[0] + 1]
 
     if frequency then
-        local msg = string.format("/d [%s] - [Информация]: Перехожу на частоту %s",
+        local msg = string.format("/d [%s] - [Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї]: ГЏГҐГ°ГҐГµГ®Г¦Гі Г­Г  Г·Г Г±ГІГ®ГІГі %s",
             toCP1251(currentOrg),
             frequency)
         sampSendChat(msg)
@@ -317,7 +317,7 @@ local function leaveFrequency()
     local frequency = frequencies[selectedFreq[0] + 1]
 
     if frequency then
-        local msg = string.format("/d [%s] - [Информация]: Покидаю частоту %s",
+        local msg = string.format("/d [%s] - [Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї]: ГЏГ®ГЄГЁГ¤Г Гѕ Г·Г Г±ГІГ®ГІГі %s",
             toCP1251(currentOrg),
             frequency)
         sampSendChat(msg)
@@ -327,13 +327,13 @@ end
 local function startInterview()
     lua_thread.create(function()
         local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-        sampSendChat(string.format("/d [%s] - [Информация]: Перехожу на частоту 103.9",
+        sampSendChat(string.format("/d [%s] - [Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї]: ГЏГҐГ°ГҐГµГ®Г¦Гі Г­Г  Г·Г Г±ГІГ®ГІГі 103.9",
             toCP1251(currentOrg)))
         wait(1000)
-        sampSendChat(string.format("/d [%s] - [103.9]: Занимаю гос. волну на время для",
+        sampSendChat(string.format("/d [%s] - [103.9]: Г‡Г Г­ГЁГ¬Г Гѕ ГЈГ®Г±. ГўГ®Г«Г­Гі Г­Г  ГўГ°ГҐГ¬Гї Г¤Г«Гї",
             toCP1251(currentOrg)))
         wait(1000)
-        sampSendChat(string.format("/d [%s] - [103.9]: .. проведения собеседования.",
+        sampSendChat(string.format("/d [%s] - [103.9]: .. ГЇГ°Г®ГўГҐГ¤ГҐГ­ГЁГї Г±Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГї.",
             toCP1251(currentOrg)))
         wait(1000)
         sampSendChat("/lmenu")
@@ -342,7 +342,7 @@ end
 
 local function leaveInterview()
     local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-    sampSendChat(string.format("/d [%s] - [Информация]: Покидаю частоту 103.9",
+    sampSendChat(string.format("/d [%s] - [Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї]: ГЏГ®ГЄГЁГ¤Г Гѕ Г·Г Г±ГІГ®ГІГі 103.9",
         toCP1251(currentOrg)))
 end
 
@@ -364,16 +364,16 @@ function samp.onServerMessage(color, text)
     local cleanText = text:gsub('{[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]}', '')
     cleanText = cleanText:gsub(",", ".")
 
-    -- Обработка входа на частоту
+    -- ГЋГЎГ°Г ГЎГ®ГІГЄГ  ГўГµГ®Г¤Г  Г­Г  Г·Г Г±ГІГ®ГІГі
     local verbEnter = matchAny(cleanText, {
-        "[Пп]ерехожу?[лa]?",
-        "[Пп]ерешел?",
-        "[Пп]ерешёл?",        
-        "[Пп]ерешла?"
+        "[ГЏГЇ]ГҐГ°ГҐГµГ®Г¦Гі?[Г«a]?",
+        "[ГЏГЇ]ГҐГ°ГҐГёГҐГ«?",
+        "[ГЏГЇ]ГҐГ°ГҐГёВёГ«?",        
+        "[ГЏГЇ]ГҐГ°ГҐГёГ«Г ?"
     })
 
     if verbEnter then
-        local patternEnter = "%[D%].*%[(.-)%].+%[Информация%].+" .. verbEnter .. "%s+на%s+частоту%s+([0-9%.,]+)"
+        local patternEnter = "%[D%].*%[(.-)%].+%[Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї%].+" .. verbEnter .. "%s+Г­Г %s+Г·Г Г±ГІГ®ГІГі%s+([0-9%.,]+)"
         local org, freq = cleanText:match(patternEnter)
         if org and freq then
             activeFrequencies[cleanOrgName(org)] = cleanFrequency(freq)
@@ -381,18 +381,18 @@ function samp.onServerMessage(color, text)
         end
     end
 
-    -- Обработка выхода с частоты
+    -- ГЋГЎГ°Г ГЎГ®ГІГЄГ  ГўГ»ГµГ®Г¤Г  Г± Г·Г Г±ГІГ®ГІГ»
     local verbLeave = matchAny(cleanText, {
-        "[Пп]окидаю?",
-        "[Пп]окидал?",
-        "[Пп]окидала?",
-        "[Пп]окинул?",
-        "[Пп]окидало?",
-        "[Пп]окинула?"
+        "[ГЏГЇ]Г®ГЄГЁГ¤Г Гѕ?",
+        "[ГЏГЇ]Г®ГЄГЁГ¤Г Г«?",
+        "[ГЏГЇ]Г®ГЄГЁГ¤Г Г«Г ?",
+        "[ГЏГЇ]Г®ГЄГЁГ­ГіГ«?",
+        "[ГЏГЇ]Г®ГЄГЁГ¤Г Г«Г®?",
+        "[ГЏГЇ]Г®ГЄГЁГ­ГіГ«Г ?"
     })
 
     if verbLeave then
-        local patternLeave = "%[D%].*%[(.-)%].+%[Информация%].+" .. verbLeave .. "%s+частоту%s+([0-9%.]+)"
+        local patternLeave = "%[D%].*%[(.-)%].+%[Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї%].+" .. verbLeave .. "%s+Г·Г Г±ГІГ®ГІГі%s+([0-9%.]+)"
         local orgLeave, freqLeave = cleanText:match(patternLeave)
         if orgLeave and freqLeave then
             local cleanOrg = cleanOrgName(orgLeave)
@@ -412,11 +412,11 @@ end
 
 local function showActiveFrequencies()
     if not next(activeFrequencies) then
-        sampAddChatMessage("{3F40B7}[Frequency Helper]{FFFFFF} На данный момент нет организаций на частотах.", -1)
+        sampAddChatMessage("{3F40B7}[Frequency Helper]{FFFFFF} ГЌГ  Г¤Г Г­Г­Г»Г© Г¬Г®Г¬ГҐГ­ГІ Г­ГҐГІ Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГ© Г­Г  Г·Г Г±ГІГ®ГІГ Гµ.", -1)
         return
     end
 
-    sampAddChatMessage("{3F40B7}[Frequency Helper]{FFFFFF} Активные частоты организаций:", -1)
+    sampAddChatMessage("{3F40B7}[Frequency Helper]{FFFFFF} ГЂГЄГІГЁГўГ­Г»ГҐ Г·Г Г±ГІГ®ГІГ» Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГ©:", -1)
     sampAddChatMessage("--------------------------------", -1)
 
     local sortedOrgs = {}
@@ -427,7 +427,7 @@ local function showActiveFrequencies()
 
     for _, org in ipairs(sortedOrgs) do
         local freq = activeFrequencies[org]
-        sampAddChatMessage(string.format("{3F40B7}%s{FFFFFF} находится на частоте {3F40B7}%s",
+        sampAddChatMessage(string.format("{3F40B7}%s{FFFFFF} Г­Г ГµГ®Г¤ГЁГІГ±Гї Г­Г  Г·Г Г±ГІГ®ГІГҐ {3F40B7}%s",
             cleanOrgName(org),
             cleanFrequency(freq)), -1)
     end
@@ -437,7 +437,7 @@ end
 
 local function drawMessageWindow()
     imgui.SetNextWindowSize(imgui.ImVec2(450, 350), imgui.Cond.FirstUseEver)
-    imgui.Begin(u8"Отправка сообщения", messageWindowState)
+    imgui.Begin(u8"ГЋГІГЇГ°Г ГўГЄГ  Г±Г®Г®ГЎГ№ГҐГ­ГЁГї", messageWindowState)
 
     imgui.BeginChild("ChatMessages", imgui.ImVec2(-1, 200), true)
     for i, msg in ipairs(chatMessages) do
@@ -445,23 +445,23 @@ local function drawMessageWindow()
     end
     imgui.EndChild()
 
-    if imgui.Button(u8"Очистить чат", imgui.ImVec2(-1, 30)) then
-        -- Очистить все сообщения
+    if imgui.Button(u8"ГЋГ·ГЁГ±ГІГЁГІГј Г·Г ГІ", imgui.ImVec2(-1, 30)) then
+        -- ГЋГ·ГЁГ±ГІГЁГІГј ГўГ±ГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГї
         chatMessages = {}
     end
 
     if imgui.IsItemHovered() then
-        imgui.SetTooltip(u8"Очистить все сообщения в чате")
+        imgui.SetTooltip(u8"ГЋГ·ГЁГ±ГІГЁГІГј ГўГ±ГҐ Г±Г®Г®ГЎГ№ГҐГ­ГЁГї Гў Г·Г ГІГҐ")
     end
 
-    -- Галочка "Отправить без указания организации"
-    if imgui.Checkbox(u8"Отправить без указания организации", sendWithoutTarget) then
+    -- ГѓГ Г«Г®Г·ГЄГ  "ГЋГІГЇГ°Г ГўГЁГІГј ГЎГҐГ§ ГіГЄГ Г§Г Г­ГЁГї Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГЁ"
+    if imgui.Checkbox(u8"ГЋГІГЇГ°Г ГўГЁГІГј ГЎГҐГ§ ГіГЄГ Г§Г Г­ГЁГї Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГЁ", sendWithoutTarget) then
         saveConfig()
     end
 
-    -- Выбор организации для связи (если галочка не стоит)
+    -- Г‚Г»ГЎГ®Г° Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГЁ Г¤Г«Гї Г±ГўГїГ§ГЁ (ГҐГ±Г«ГЁ ГЈГ Г«Г®Г·ГЄГ  Г­ГҐ Г±ГІГ®ГЁГІ)
     if not sendWithoutTarget[0] then
-    imgui.Text(u8"Организация для связи:")
+    imgui.Text(u8"ГЋГ°ГЈГ Г­ГЁГ§Г Г¶ГЁГї Г¤Г«Гї Г±ГўГїГ§ГЁ:")
         if imgui.BeginCombo(u8"##target", ORGANIZATIONS[selectedTargetOrg[0] + 1]) then
             for i, org in ipairs(ORGANIZATIONS) do
                 if imgui.Selectable(org, selectedTargetOrg[0] == i - 1) then
@@ -473,40 +473,40 @@ local function drawMessageWindow()
         end
     end
 
-    -- Поле ввода сообщения
-    imgui.Text(u8"Сообщение:")
+    -- ГЏГ®Г«ГҐ ГўГўГ®Г¤Г  Г±Г®Г®ГЎГ№ГҐГ­ГЁГї
+    imgui.Text(u8"Г‘Г®Г®ГЎГ№ГҐГ­ГЁГҐ:")
     imgui.SetNextItemWidth(-1)
     if imgui.InputText(u8"##msg", messageText, 1024) then
         saveConfig()
     end
 
-    -- Кнопки внизу
-    if imgui.Button(u8"Отправить сообщение", imgui.ImVec2(150, 30)) then
+    -- ГЉГ­Г®ГЇГЄГЁ ГўГ­ГЁГ§Гі
+    if imgui.Button(u8"ГЋГІГЇГ°Г ГўГЁГІГј Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ", imgui.ImVec2(150, 30)) then
         sendMessage()
     end
 
     imgui.SameLine()
 
-    if imgui.Button(u8"Покинуть частоту", imgui.ImVec2(150, 30)) then
-        -- Отправляем команду выхода с частоты
+    if imgui.Button(u8"ГЏГ®ГЄГЁГ­ГіГІГј Г·Г Г±ГІГ®ГІГі", imgui.ImVec2(150, 30)) then
+        -- ГЋГІГЇГ°Г ГўГ«ГїГҐГ¬ ГЄГ®Г¬Г Г­Г¤Гі ГўГ»ГµГ®Г¤Г  Г± Г·Г Г±ГІГ®ГІГ»
         leaveFrequency()
-        -- Закрываем окно сообщений и открываем основное
+        -- Г‡Г ГЄГ°Г»ГўГ ГҐГ¬ Г®ГЄГ­Г® Г±Г®Г®ГЎГ№ГҐГ­ГЁГ© ГЁ Г®ГІГЄГ°Г»ГўГ ГҐГ¬ Г®Г±Г­Г®ГўГ­Г®ГҐ
         messageWindowState[0] = false
         windowState[0] = true
     end
         if imgui.IsItemHovered() then
-            imgui.SetTooltip(u8"Покинуть текущую частоту и закрыть окно сообщений")
+            imgui.SetTooltip(u8"ГЏГ®ГЄГЁГ­ГіГІГј ГІГҐГЄГіГ№ГіГѕ Г·Г Г±ГІГ®ГІГі ГЁ Г§Г ГЄГ°Г»ГІГј Г®ГЄГ­Г® Г±Г®Г®ГЎГ№ГҐГ­ГЁГ©")
         end
 
     imgui.SameLine()
 
-    if imgui.Button(u8"Закрыть", imgui.ImVec2(120, 30)) then
+    if imgui.Button(u8"Г‡Г ГЄГ°Г»ГІГј", imgui.ImVec2(120, 30)) then
         messageWindowState[0] = false
         windowState[0] = true
     end
     
     if imgui.IsItemHovered() then
-        imgui.SetTooltip(u8"Закрыть окно сообщений без выхода с частоты")
+        imgui.SetTooltip(u8"Г‡Г ГЄГ°Г»ГІГј Г®ГЄГ­Г® Г±Г®Г®ГЎГ№ГҐГ­ГЁГ© ГЎГҐГ§ ГўГ»ГµГ®Г¤Г  Г± Г·Г Г±ГІГ®ГІГ»")
     end
 
     imgui.End()
@@ -516,7 +516,7 @@ local function drawWindow()
     imgui.SetNextWindowSize(imgui.ImVec2(450, 500), imgui.Cond.FirstUseEver)
     imgui.Begin(u8"Frequency Helper v1.4", windowState)
 
-    imgui.Text(u8"Ваша организация:")
+    imgui.Text(u8"Г‚Г ГёГ  Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГї:")
     if imgui.BeginCombo(u8"##org", ORGANIZATIONS[selectedOrg[0] + 1]) then
         for i, org in ipairs(ORGANIZATIONS) do
             if imgui.Selectable(org, selectedOrg[0] == i - 1) then
@@ -536,8 +536,8 @@ table.sort(freqKeys)
 local orgName = ORGANIZATIONS[selectedOrg[0] + 1]
 local availableFrequencies = getAvailableFrequencies(orgName)
 
-imgui.Text(u8"Выберите частоту:")
-local currentFreq = availableFrequencies[selectedFreq[0] + 1] or u8"Нет доступных частот"
+imgui.Text(u8"Г‚Г»ГЎГҐГ°ГЁГІГҐ Г·Г Г±ГІГ®ГІГі:")
+local currentFreq = availableFrequencies[selectedFreq[0] + 1] or u8"ГЌГҐГІ Г¤Г®Г±ГІГіГЇГ­Г»Гµ Г·Г Г±ГІГ®ГІ"
 if imgui.BeginCombo(u8"##freq", currentFreq) then
     for i, freq in ipairs(availableFrequencies) do
         if imgui.Selectable(freq, selectedFreq[0] == i - 1) then
@@ -551,55 +551,55 @@ if imgui.BeginCombo(u8"##freq", currentFreq) then
     imgui.EndCombo()
 end
 
-    if imgui.Button(u8"Перейти на частоту") then
+    if imgui.Button(u8"ГЏГҐГ°ГҐГ©ГІГЁ Г­Г  Г·Г Г±ГІГ®ГІГі") then
         switchFrequency()
     end
 
     imgui.SameLine()
 
-    if imgui.Button(u8"Покинуть частоту") then
+    if imgui.Button(u8"ГЏГ®ГЄГЁГ­ГіГІГј Г·Г Г±ГІГ®ГІГі") then
         leaveFrequency()
     end
 
-    if imgui.Button(u8"Открыть окно сообщений", imgui.ImVec2(-1, 30)) then
+    if imgui.Button(u8"ГЋГІГЄГ°Г»ГІГј Г®ГЄГ­Г® Г±Г®Г®ГЎГ№ГҐГ­ГЁГ©", imgui.ImVec2(-1, 30)) then
         messageWindowState[0] = true
         windowState[0] = false
     end
 
     imgui.Separator()
-    if imgui.Button(u8"Тех неполадки", imgui.ImVec2(-1, 30)) then
+    if imgui.Button(u8"Г’ГҐГµ Г­ГҐГЇГ®Г«Г Г¤ГЄГЁ", imgui.ImVec2(-1, 30)) then
         local currentOrg = ORGANIZATIONS[selectedOrg[0] + 1]
-        local msg = string.format("/d [%s] - [Информация]: Технические неполадки.",
+        local msg = string.format("/d [%s] - [Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї]: Г’ГҐГµГ­ГЁГ·ГҐГ±ГЄГЁГҐ Г­ГҐГЇГ®Г«Г Г¤ГЄГЁ.",
             toCP1251(currentOrg))
         sampSendChat(msg)
     end
     
     if imgui.IsItemHovered() then
-        imgui.SetTooltip(u8"Написать в /d о тех. неполадках.")
+        imgui.SetTooltip(u8"ГЌГ ГЇГЁГ±Г ГІГј Гў /d Г® ГІГҐГµ. Г­ГҐГЇГ®Г«Г Г¤ГЄГ Гµ.")
     end
 
     imgui.Separator()
-    imgui.Text(u8"Собеседование:")
+    imgui.Text(u8"Г‘Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГҐ:")
 
-    if imgui.Button(u8"Забить собеседование", imgui.ImVec2(-1, 30)) then
+    if imgui.Button(u8"Г‡Г ГЎГЁГІГј Г±Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГҐ", imgui.ImVec2(-1, 30)) then
         startInterview()
     end
     
     if imgui.IsItemHovered() then
-        imgui.SetTooltip(u8"Выйти на 103.9 и написать о занятии волны для собеседования. (После этого открыват /lmenu)")
+        imgui.SetTooltip(u8"Г‚Г»Г©ГІГЁ Г­Г  103.9 ГЁ Г­Г ГЇГЁГ±Г ГІГј Г® Г§Г Г­ГїГІГЁГЁ ГўГ®Г«Г­Г» Г¤Г«Гї Г±Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГї. (ГЏГ®Г±Г«ГҐ ГЅГІГ®ГЈГ® Г®ГІГЄГ°Г»ГўГ ГІ /lmenu)")
     end
     
-    if imgui.Button(u8"Выйти с собески", imgui.ImVec2(-1, 30)) then
+    if imgui.Button(u8"Г‚Г»Г©ГІГЁ Г± Г±Г®ГЎГҐГ±ГЄГЁ", imgui.ImVec2(-1, 30)) then
         leaveInterview()
     end
 
     if imgui.IsItemHovered() then
-        imgui.SetTooltip(u8"Выйти с собеседования и покинуть частоту")
+        imgui.SetTooltip(u8"Г‚Г»Г©ГІГЁ Г± Г±Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГї ГЁ ГЇГ®ГЄГЁГ­ГіГІГј Г·Г Г±ГІГ®ГІГі")
     end
 
     imgui.Separator()
     
-    if imgui.Button(u8"Показать активные частоты", imgui.ImVec2(-1, 30)) then
+    if imgui.Button(u8"ГЏГ®ГЄГ Г§Г ГІГј Г ГЄГІГЁГўГ­Г»ГҐ Г·Г Г±ГІГ®ГІГ»", imgui.ImVec2(-1, 30)) then
         showActiveFrequencies()
     end
 
@@ -630,7 +630,7 @@ function main()
         showActiveFrequencies()
     end)
 
-    sampAddChatMessage("{3F40B7}[Frequency Helper]{FFFFFF} Используйте /freq для открытия меню | /activefreq для просмотра активных частот | By MrKiroks", -1)
+    sampAddChatMessage("{3F40B7}[Frequency Helper]{FFFFFF} Г€Г±ГЇГ®Г«ГјГ§ГіГ©ГІГҐ /freq Г¤Г«Гї Г®ГІГЄГ°Г»ГІГЁГї Г¬ГҐГ­Гѕ | /activefreq Г¤Г«Гї ГЇГ°Г®Г±Г¬Г®ГІГ°Г  Г ГЄГІГЁГўГ­Г»Гµ Г·Г Г±ГІГ®ГІ | By MrKiroks", -1)
 
     while true do
         wait(0)
