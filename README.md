@@ -1,8 +1,8 @@
 # 📡 Frequency Helper  
 Универсальный помощник для деп-чата SA-MP
 
-[![SA-MP](https://img.shields.io/badge/SA--MP-0.3.7+-orange?style=flat-square)](https://sa-mp.com)
-[![MoonLoader](https://img.shields.io/badge/MoonLoader-027-blue?style=flat-square)](https://moonloader.ru)
+[![ArizonaRP](https://img.shields.io/badge/Arizona-RP-orange?style=flat-square)](https://arizona-rp.com/)
+[![MoonLoader](https://img.shields.io/badge/MoonLoader-0.27-blue?style=flat-square)](https://www.blast.hk/threads/13305/)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
 ## Что это
