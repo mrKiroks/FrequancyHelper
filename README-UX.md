@@ -1,4 +1,4 @@
-# 📡 Frequency Helper v2.0  
+# 📡 Frequency Helper UX 
 
 [![ArizonaRP](https://img.shields.io/badge/Arizona-RP-orange?style=flat-square)](https://arizona-rp.com/)
 [![MoonLoader](https://img.shields.io/badge/MoonLoader-0.27-blue?style=flat-square)](https://www.blast.hk/threads/13305/)
