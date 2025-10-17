@@ -26,4 +26,4 @@ Frequency Helper упрощает жизнь игрокам гос. структ
 3. Запусти игру. В чате появится подсказка `/freq`.
 
 ## Лицензия
-MIT © 2025 mrKiroks, mr_kiroks
+MIT © 2025 mrKiroks
