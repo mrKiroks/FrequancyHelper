@@ -11,10 +11,10 @@ Frequency Helper упрощает жизнь игрокам гос. структ
 Скрипт работает **на всех серверах**.
 
 ## Две версии
-| Версия | Что умеет | Серверы |
-|--------|-----------|---------|
-| **UX** (Universal eXchange) | Не использует частоты. [Инструкция по UX-версии](README-UX.md) | **Любые сервера Arizona-RP** |
-| **RX** (Radio eXchange) | Система частот, подстроенная под конкретный сервер. [Инструкция по RX-версии](README-RX.md) | Подходит только для сервера **Saint-Rose** |
+| Версия | Что умеет | Серверы | Скачать |
+|--------|-----------|---------|-----------|
+| **UX** (Universal eXchange) | Не использует частоты. [Инструкция по UX-версии](README-UX.md) | **Любые сервера Arizona-RP** | [Скачать UX](https://github.com/mrKiroks/FrequancyHelper/releases/download/UX-1.0/Frequency.Helper.UX.lua)
+| **RX** (Radio eXchange) | Система частот, подстроенная под конкретный сервер. [Инструкция по RX-версии](README-RX.md) | Подходит только для сервера **Saint-Rose** | [Скачать RX](https://github.com/mrKiroks/FrequancyHelper/releases/download/RX-1.0/Frequency.Helper.RX.lua) |
 
 
 ## Базовые возможности (обе версии)
