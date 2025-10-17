@@ -60,4 +60,4 @@
 ---
 
 📜 Лицензия
-MIT © 2025 mrKiroks & mr_kiroks
+MIT © 2025 mrKiroks, mr_kiroks
