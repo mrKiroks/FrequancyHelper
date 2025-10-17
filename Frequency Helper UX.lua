@@ -10,47 +10,47 @@ script_name("Frequency Helper - customizable tags")
 script_version("2.0")
 
 -- ======================================
--- Настраиваемый скрипт: организации и шаблоны
--- Всё хранится в frequency_helper.ini
+-- ГЌГ Г±ГІГ°Г ГЁГўГ ГҐГ¬Г»Г© Г±ГЄГ°ГЁГЇГІ: Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГЁ ГЁ ГёГ ГЎГ«Г®Г­Г»
+-- Г‚Г±Вё ГµГ°Г Г­ГЁГІГ±Гї Гў frequency_helper.ini
 -- ======================================
 
 -- Default data (used if INI absent or to reset)
 local DEFAULT_ORGANIZATIONS = {
-    u8"Правительство",
-    u8"Прокуратура",
-    u8"Суд",
-    u8"Центр лицензирования",
-    u8"Пожарный департамент",
-    u8"ФБР",
-    u8"Полиция ЛС",
-    u8"Полиция СФ",
-    u8"Полиция ЛВ",
-    u8"Областная полиция",
-    u8"Армия ЛС",
-    u8"ВМС",
+    u8"ГЏГ°Г ГўГЁГІГҐГ«ГјГ±ГІГўГ®",
+    u8"ГЏГ°Г®ГЄГіГ°Г ГІГіГ°Г ",
+    u8"Г‘ГіГ¤",
+    u8"Г–ГҐГ­ГІГ° Г«ГЁГ¶ГҐГ­Г§ГЁГ°Г®ГўГ Г­ГЁГї",
+    u8"ГЏГ®Г¦Г Г°Г­Г»Г© Г¤ГҐГЇГ Г°ГІГ Г¬ГҐГ­ГІ",
+    u8"Г”ГЃГђ",
+    u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‘",
+    u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‘Г”",
+    u8"ГЏГ®Г«ГЁГ¶ГЁГї Г‹Г‚",
+    u8"ГЋГЎГ«Г Г±ГІГ­Г Гї ГЇГ®Г«ГЁГ¶ГЁГї",
+    u8"ГЂГ°Г¬ГЁГї Г‹Г‘",
+    u8"Г‚ГЊГ‘",
     u8"Delta Force",
     u8"MPC",
-    u8"Тюрьма ЛВ",
-    u8"Больница ЛС",
-    u8"Больница СФ",
-    u8"Больница ЛВ",
-    u8"Больница JF",
-    u8"СМИ ЛС",
-    u8"СМИ СФ",
-    u8"СМИ ЛВ",
-    u8"Страховая",
-    u8"Похитители",
-    u8"Информация",
+    u8"Г’ГѕГ°ГјГ¬Г  Г‹Г‚",
+    u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‹Г‘",
+    u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‘Г”",
+    u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  Г‹Г‚",
+    u8"ГЃГ®Г«ГјГ­ГЁГ¶Г  JF",
+    u8"Г‘ГЊГ€ Г‹Г‘",
+    u8"Г‘ГЊГ€ Г‘Г”",
+    u8"Г‘ГЊГ€ Г‹Г‚",
+    u8"Г‘ГІГ°Г ГµГ®ГўГ Гї",
+    u8"ГЏГ®ГµГЁГІГЁГІГҐГ«ГЁ",
+    u8"Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї",
     u8"S.W.A.T"
 }
 
 local DEFAULT_TEMPLATES = {
-    techMessage = u8"/b [%s] - [Информация]: Технические неполадки",
+    techMessage = u8"/b [%s] - [Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї]: Г’ГҐГµГ­ГЁГ·ГҐГ±ГЄГЁГҐ Г­ГҐГЇГ®Г«Г Г¤ГЄГЁ",
     interviewStart = {
-        u8"/b [%s] - [Информация]: Начинаю собеседование",
-        u8"/b [%s] - [Информация]: Прошу не беспокоить, проводится собеседование"
+        u8"/b [%s] - [Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї]: ГЌГ Г·ГЁГ­Г Гѕ Г±Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГҐ",
+        u8"/b [%s] - [Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї]: ГЏГ°Г®ГёГі Г­ГҐ ГЎГҐГ±ГЇГ®ГЄГ®ГЁГІГј, ГЇГ°Г®ГўГ®Г¤ГЁГІГ±Гї Г±Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГҐ"
     },
-    interviewLeave = u8"/b [%s] - [Информация]: Завершил собеседование"
+    interviewLeave = u8"/b [%s] - [Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї]: Г‡Г ГўГҐГ°ГёГЁГ« Г±Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГҐ"
 }
 
 -- State
@@ -58,7 +58,7 @@ local ORGANIZATIONS = {}
 local TEMPLATES = { techMessage = "", interviewStart = {}, interviewLeave = "" }
 
 local windowState = new.bool(false)
-local settingsTab = new.int(1) -- 1: Главное, 2: Настройки
+local settingsTab = new.int(1) -- 1: ГѓГ«Г ГўГ­Г®ГҐ, 2: ГЌГ Г±ГІГ°Г®Г©ГЄГЁ
 local selectedOrg = new.int(0)
 local selectedTargetOrg = new.int(0)
 local messageText = new.char[1024]()
@@ -88,9 +88,9 @@ local function addChatMessageToWindow(msg)
 end
 
 local function saveConfig()
-    local f, err = io.open(configFile, "wb") -- бинарный режим
+    local f, err = io.open(configFile, "wb") -- ГЎГЁГ­Г Г°Г­Г»Г© Г°ГҐГ¦ГЁГ¬
     if not f then
-        sampAddChatMessage(string.format("{FF0000}[Frequency Helper]{FFFFFF} Ошибка при сохранении: %s", tostring(err)), -1)
+        sampAddChatMessage(string.format("{FF0000}[Frequency Helper]{FFFFFF} ГЋГёГЁГЎГЄГ  ГЇГ°ГЁ Г±Г®ГµГ°Г Г­ГҐГ­ГЁГЁ: %s", tostring(err)), -1)
         return false
     end
 
@@ -128,7 +128,7 @@ local function loadConfig()
 
     local content = file:read("*a")
     file:close()
-    -- убираем BOM
+    -- ГіГЎГЁГ°Г ГҐГ¬ BOM
     content = content:gsub("^\239\187\191", "")
 
     -- Defaults
@@ -200,7 +200,7 @@ local function formatTemplate(template, currentOrg, targetOrg, customMessage)
     out = out:gsub("%%TARGET%%", targetOrg or "")
     out = out:gsub("%%MSG%%", customMessage or "")
 
-    -- Поддержка %s для обратной совместимости
+    -- ГЏГ®Г¤Г¤ГҐГ°Г¦ГЄГ  %s Г¤Г«Гї Г®ГЎГ°Г ГІГ­Г®Г© Г±Г®ГўГ¬ГҐГ±ГІГЁГ¬Г®Г±ГІГЁ
     if out:find("%%s") then
         local cnt = 0
         for _ in out:gmatch("%%s") do cnt = cnt + 1 end
@@ -225,13 +225,13 @@ local function sendMessage()
 
         local fullMessage
         if sendWithoutTarget[0] then
-            fullMessage = string.format("/b [%s] - [Информация]: %s",
+            fullMessage = string.format("/b [%s] - [Г€Г­ГґГ®Г°Г¬Г Г¶ГЁГї]: %s",
                                         currentOrg, message)
         else
             fullMessage = string.format("/b [%s] - [%s]: %s",
                                         currentOrg, targetOrg, message)
         end
-        -- уходят в чат уже в CP1251
+        -- ГіГµГ®Г¤ГїГІ Гў Г·Г ГІ ГіГ¦ГҐ Гў CP1251
         sampSendChat(toCP1251(fullMessage))
         ffi.fill(messageText, 0)
         saveConfig()
@@ -267,7 +267,7 @@ local newOrgNameBuf = new.char[128]()
 
 local function drawSettings()
     imgui.BeginChild("orgs", imgui.ImVec2(0, 220), true)
-    imgui.Text(u8:encode("Организации:"))
+    imgui.Text(u8:encode("ГЋГ°ГЈГ Г­ГЁГ§Г Г¶ГЁГЁ:"))
 
     for i = 1, #ORGANIZATIONS do
         local org = ORGANIZATIONS[i]
@@ -292,7 +292,7 @@ local function drawSettings()
             saveConfig()
         end
         imgui.SameLine()
-        if imgui.Button(u8:encode("Удалить##del"..i), imgui.ImVec2(70,0)) then
+        if imgui.Button(u8:encode("Г“Г¤Г Г«ГЁГІГј##del"..i), imgui.ImVec2(70,0)) then
             table.remove(ORGANIZATIONS, i)
             if selectedOrg[0] >= #ORGANIZATIONS then selectedOrg[0] = math.max(0,#ORGANIZATIONS-1) end
             saveConfig()
@@ -302,10 +302,10 @@ local function drawSettings()
     end
 
     imgui.Separator()
-    imgui.Text(u8:encode("Добавить новую организацию:"))
+    imgui.Text(u8:encode("Г„Г®ГЎГ ГўГЁГІГј Г­Г®ГўГіГѕ Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГѕ:"))
     imgui.SetNextItemWidth(-1)
     imgui.InputText("##neworg", newOrgNameBuf, 128)
-    if imgui.Button(u8:encode("Добавить"), imgui.ImVec2(-1,0)) then
+    if imgui.Button(u8:encode("Г„Г®ГЎГ ГўГЁГІГј"), imgui.ImVec2(-1,0)) then
         local name = trim(ffi.string(newOrgNameBuf))
         if name ~= "" then
             table.insert(ORGANIZATIONS, (name))
@@ -319,9 +319,9 @@ local function drawSettings()
     -- Templates
     ------------------------------------------------------------------
     imgui.BeginChild("templates", imgui.ImVec2(0, 260), true)
-    imgui.Text(u8:encode("Шаблоны сообщений (%%ORG%% %%TARGET%% %%MSG%%):"))
+    imgui.Text(u8:encode("ГГ ГЎГ«Г®Г­Г» Г±Г®Г®ГЎГ№ГҐГ­ГЁГ© (%%ORG%% %%TARGET%% %%MSG%%):"))
     imgui.Separator()
-    imgui.Text(u8:encode("Тех. неполадки:"))
+    imgui.Text(u8:encode("Г’ГҐГµ. Г­ГҐГЇГ®Г«Г Г¤ГЄГЁ:"))
 
     local techBuf = ffi.new("char[512]")
     ffi.copy(techBuf, TEMPLATES.techMessage)
@@ -331,7 +331,7 @@ local function drawSettings()
     end
 
     imgui.Separator()
-    imgui.Text(u8:encode("Начало собеседования:"))
+    imgui.Text(u8:encode("ГЌГ Г·Г Г«Г® Г±Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГї:"))
     for i = 1, #TEMPLATES.interviewStart do
         local buf = ffi.new("char[512]")
         ffi.copy(buf, TEMPLATES.interviewStart[i])
@@ -352,7 +352,7 @@ local function drawSettings()
             saveConfig()
         end
         imgui.SameLine()
-        if imgui.Button(u8:encode("Удалить##del"..i+1000), imgui.ImVec2(80,0)) then
+        if imgui.Button(u8:encode("Г“Г¤Г Г«ГЁГІГј##del"..i+1000), imgui.ImVec2(80,0)) then
             table.remove(TEMPLATES.interviewStart, i)
             saveConfig()
             break
@@ -362,7 +362,7 @@ local function drawSettings()
     imgui.Separator()
     local newStartBuf = ffi.new("char[256]")
     imgui.InputText("##newstart", newStartBuf, 256)
-    if imgui.Button(u8:encode("Добавить шаблон начала собеседования"), imgui.ImVec2(-1,0)) then
+    if imgui.Button(u8:encode("Г„Г®ГЎГ ГўГЁГІГј ГёГ ГЎГ«Г®Г­ Г­Г Г·Г Г«Г  Г±Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГї"), imgui.ImVec2(-1,0)) then
         local s = trim(ffi.string(newStartBuf))
         if s ~= "" then
             table.insert(TEMPLATES.interviewStart, (s))
@@ -372,7 +372,7 @@ local function drawSettings()
     end
 
     imgui.Separator()
-    imgui.Text(u8:encode("Завершение собеседования:"))
+    imgui.Text(u8:encode("Г‡Г ГўГҐГ°ГёГҐГ­ГЁГҐ Г±Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГї:"))
     local leaveBuf = ffi.new("char[512]")
     ffi.copy(leaveBuf, TEMPLATES.interviewLeave)
     if imgui.InputText("##leave", leaveBuf, 512) then
@@ -381,7 +381,7 @@ local function drawSettings()
     end
 
     imgui.Separator()
-    if imgui.Button(u8:encode("Восстановить шаблоны по умолчанию"), imgui.ImVec2(-1,0)) then
+    if imgui.Button(u8:encode("Г‚Г®Г±Г±ГІГ Г­Г®ГўГЁГІГј ГёГ ГЎГ«Г®Г­Г» ГЇГ® ГіГ¬Г®Г«Г·Г Г­ГЁГѕ"), imgui.ImVec2(-1,0)) then
         TEMPLATES.techMessage = DEFAULT_TEMPLATES.techMessage
         TEMPLATES.interviewStart = {}
         for _,v in ipairs(DEFAULT_TEMPLATES.interviewStart) do table.insert(TEMPLATES.interviewStart, v) end
@@ -392,7 +392,7 @@ local function drawSettings()
 end
 -- UI: Main tab
 local function drawMain()
-    imgui.Text(u8"Ваша организация:")
+    imgui.Text(u8"Г‚Г ГёГ  Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГї:")
     if imgui.BeginCombo(u8"##org", ORGANIZATIONS[selectedOrg[0] + 1] or u8"-") then
         for i, org in ipairs(ORGANIZATIONS) do
             if imgui.Selectable(org, selectedOrg[0] == i-1) then selectedOrg[0] = i-1; saveConfig() end
@@ -400,7 +400,7 @@ local function drawMain()
         imgui.EndCombo()
     end
 
-    imgui.Text(u8"Организация для связи:")
+    imgui.Text(u8"ГЋГ°ГЈГ Г­ГЁГ§Г Г¶ГЁГї Г¤Г«Гї Г±ГўГїГ§ГЁ:")
     if imgui.BeginCombo(u8"##target", ORGANIZATIONS[selectedTargetOrg[0] + 1] or u8"-") then
         for i, org in ipairs(ORGANIZATIONS) do
             if imgui.Selectable(org, selectedTargetOrg[0] == i-1) then selectedTargetOrg[0] = i-1; saveConfig() end
@@ -408,26 +408,26 @@ local function drawMain()
         imgui.EndCombo()
     end
 
-    imgui.Checkbox(u8"Отправить без указания организации", sendWithoutTarget)
+    imgui.Checkbox(u8"ГЋГІГЇГ°Г ГўГЁГІГј ГЎГҐГ§ ГіГЄГ Г§Г Г­ГЁГї Г®Г°ГЈГ Г­ГЁГ§Г Г¶ГЁГЁ", sendWithoutTarget)
 
     imgui.Separator()
-    imgui.Text(u8"Сообщение:")
+    imgui.Text(u8"Г‘Г®Г®ГЎГ№ГҐГ­ГЁГҐ:")
     imgui.SetNextItemWidth(-1)
     if imgui.InputText(u8"##msg", messageText, 1024) then saveConfig() end
 
-    if imgui.Button(u8"Отправить сообщение", imgui.ImVec2(180,30)) then sendMessage() end
+    if imgui.Button(u8"ГЋГІГЇГ°Г ГўГЁГІГј Г±Г®Г®ГЎГ№ГҐГ­ГЁГҐ", imgui.ImVec2(180,30)) then sendMessage() end
     imgui.SameLine()
-    if imgui.Button(u8"Открыть окно сообщений", imgui.ImVec2(180,30)) then messageWindowState[0] = true; windowState[0] = false end
+    if imgui.Button(u8"ГЋГІГЄГ°Г»ГІГј Г®ГЄГ­Г® Г±Г®Г®ГЎГ№ГҐГ­ГЁГ©", imgui.ImVec2(180,30)) then messageWindowState[0] = true; windowState[0] = false end
 
     imgui.Separator()
-    if imgui.Button(u8"Тех неполадки (шаблон)", imgui.ImVec2(-1, 30)) then
+    if imgui.Button(u8"Г’ГҐГµ Г­ГҐГЇГ®Г«Г Г¤ГЄГЁ (ГёГ ГЎГ«Г®Г­)", imgui.ImVec2(-1, 30)) then
         local cur = ORGANIZATIONS[selectedOrg[0] + 1] or ""
         local line = formatTemplate(TEMPLATES.techMessage, cur, "", "")
         sampSendChat(toCP1251(line))
     end
 
-    if imgui.Button(u8"Начать собеседование", imgui.ImVec2(-1, 30)) then startInterview() end
-    if imgui.Button(u8"Завершить собеседование", imgui.ImVec2(-1, 30)) then leaveInterview() end
+    if imgui.Button(u8"ГЌГ Г·Г ГІГј Г±Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГҐ", imgui.ImVec2(-1, 30)) then startInterview() end
+    if imgui.Button(u8"Г‡Г ГўГҐГ°ГёГЁГІГј Г±Г®ГЎГҐГ±ГҐГ¤Г®ГўГ Г­ГЁГҐ", imgui.ImVec2(-1, 30)) then leaveInterview() end
 
     imgui.Separator()
     imgui.BeginChild("ChatMessagesMain", imgui.ImVec2(-1,150), true)
@@ -437,27 +437,27 @@ end
 
 local function drawMessageWindow()
     imgui.SetNextWindowSize(imgui.ImVec2(520,380), imgui.Cond.FirstUseEver)
-    imgui.Begin(u8"Окно сообщений", messageWindowState)
+    imgui.Begin(u8"ГЋГЄГ­Г® Г±Г®Г®ГЎГ№ГҐГ­ГЁГ©", messageWindowState)
     imgui.BeginChild("msgs", imgui.ImVec2(-1, -60), true)
     for i, msg in ipairs(chatMessages) do imgui.TextWrapped(ffi.string(u8:encode(msg))) end
     imgui.EndChild()
-    if imgui.Button(u8"Очистить чат", imgui.ImVec2(140,30)) then chatMessages = {}; saveConfig() end
+    if imgui.Button(u8"ГЋГ·ГЁГ±ГІГЁГІГј Г·Г ГІ", imgui.ImVec2(140,30)) then chatMessages = {}; saveConfig() end
     imgui.SameLine()
-    if imgui.Button(u8"Закрыть", imgui.ImVec2(140,30)) then messageWindowState[0] = false; windowState[0] = true end
+    if imgui.Button(u8"Г‡Г ГЄГ°Г»ГІГј", imgui.ImVec2(140,30)) then messageWindowState[0] = false; windowState[0] = true end
     imgui.End()
 end
 
 local function drawWindow()
     imgui.SetNextWindowSize(imgui.ImVec2(540, 720), imgui.Cond.FirstUseEver)
-    imgui.Begin(u8"Frequency Helper — редактор тегов и шаблонов", windowState)
+    imgui.Begin(u8"Frequency Helper В— Г°ГҐГ¤Г ГЄГІГ®Г° ГІГҐГЈГ®Гў ГЁ ГёГ ГЎГ«Г®Г­Г®Гў", windowState)
 
     if imgui.BeginTabBar(u8"MainTabs") then
-        if imgui.BeginTabItem(u8"Главная") then
+        if imgui.BeginTabItem(u8"ГѓГ«Г ГўГ­Г Гї") then
             settingsTab[0] = 1
             drawMain()
             imgui.EndTabItem()
         end
-        if imgui.BeginTabItem(u8"Настройки") then
+        if imgui.BeginTabItem(u8"ГЌГ Г±ГІГ°Г®Г©ГЄГЁ") then
             settingsTab[0] = 2
             drawSettings()
             imgui.EndTabItem()
@@ -475,7 +475,7 @@ function main()
     loadConfig()
 
     sampRegisterChatCommand("freq", function() windowState[0] = not windowState[0]; messageWindowState[0] = false end)
-    sampAddChatMessage("{3F40B7}[Frequency Helper]{FFFFFF} Используйте /freq для открытия меню | Теги и шаблоны сохраняются в frequency_helper.ini", -1)
+    sampAddChatMessage("{3F40B7}[Frequency Helper]{FFFFFF} Г€Г±ГЇГ®Г«ГјГ§ГіГ©ГІГҐ /freq Г¤Г«Гї Г®ГІГЄГ°Г»ГІГЁГї Г¬ГҐГ­Гѕ | Г’ГҐГЈГЁ ГЁ ГёГ ГЎГ«Г®Г­Г» Г±Г®ГµГ°Г Г­ГїГѕГІГ±Гї Гў frequency_helper.ini", -1)
 
     while true do wait(0) end
 end
