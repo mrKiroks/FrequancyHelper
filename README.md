@@ -16,18 +16,12 @@ Frequency Helper упрощает жизнь игрокам гос. структ
 | **UX** (Universal eXchange) | Не использует частоты. [Инструкция по UX-версии](README-UX.md) | **Любые сервера Arizona-RP** | [Скачать UX](https://github.com/mrKiroks/FrequancyHelper/releases/download/UX-1.0/Frequency.Helper.UX.lua)
 | **RX** (Radio eXchange) | Система частот, подстроенная под конкретный сервер. [Инструкция по RX-версии](README-RX.md) | Подходит только для сервера **Saint-Rose** | [Скачать RX](https://github.com/mrKiroks/FrequancyHelper/releases/download/RX-1.0/Frequency.Helper.RX.lua) |
 
-
-## Базовые возможности (обе версии)
-- Горячие клавиши и GUI – ничего лишнего в чате  
-- Авто-сохранение настроек в UTF-8 (`frequency_helper.ini`)  
-- Окно просмотра деп-чата
-
 ## Установка (общая)
 1. Установи зависимости:  
    [MoonLoader](https://www.blast.hk/threads/13305/) + [samp.lua](https://www.blast.hk/threads/14624/) + [mimgui](https://www.blast.hk/threads/66959/)  
    *(для UX ещё [fAwesome6](https://www.blast.hk/threads/111224/))*
 
-2. Скопируй `frequency_helper_ux.lua` **или** `frequency_helper_rx.lua` в папку `moonloader`.
+2. Скопируй `frequency.helper.ux.lua` **или** `frequency.helper.rx.lua` в папку `moonloader`.
 
 3. Запусти игру. В чате появится подсказка `/freq`.
 
