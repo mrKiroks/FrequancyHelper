@@ -1,11 +1,10 @@
 # 📡 Frequency Helper v2.0  
-### Готовые фразы в /d без лишних кликов для GTA SAMP
 
-[![SA-MP](https://img.shields.io/badge/SA--MP-0.3.7+-orange?style=flat-square)](https://sa-mp.com)
-[![MoonLoader](https://img.shields.io/badge/MoonLoader-027-blue?style=flat-square)](https://moonloader.ru)
+[![Arizona RP](https://img.shields.io/badge/Arizona-RP+-orange?style=flat-square)](https://arizona-rp.com/)
+[![MoonLoader](https://img.shields.io/badge/MoonLoader-0.27-blue?style=flat-square)](https://www.blast.hk/threads/13305/)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-&lt;/div&gt;
+&lt;&gt;
 
 ## 🚀 Возможности
 | Функция | Как работает |
@@ -64,7 +63,7 @@
 
 | Главное окно | Настройки | Окно чата |
 |--------------|-----------|-----------|
-| ![main](screens/main.png) | ![settings](screens/settings.png) | ![chat](screens/chat.png) |
+| ![main](screens/main.png) | ![settings](screens/settings.png) |
 
 ---
 
@@ -83,5 +82,6 @@
 moonloader
 └── config
 └── frequency_helper.ini   ← UTF-8 с BOM
+
 📜 Лицензия
 MIT © 2025 mrKiroks & mr_kiroks
